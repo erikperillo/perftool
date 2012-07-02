@@ -49,10 +49,14 @@ while 1:
 
 	if len(temp1) != 0 and !check1:
 		temp1 = file1.readline()
+		list1 = temp1.split(",")
+
 	else check1++
 
 	if len(temp2) != 0 and !check2: 
 		temp2 = file2.readline()
+		list2 = temp2.split(",")
+
 	else check2++
 
 	if check1 and check2: break
