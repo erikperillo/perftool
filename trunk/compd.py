@@ -1,5 +1,6 @@
 import getopt
 import sys
+import stats
 
 flags = ['ds1=', 'ds2=', 'cf=', 'cl=', 'of1', 'of2', 'of=']
 
@@ -44,21 +45,34 @@ for word in list2:
 	pos2++
 
 check1=check2=0
+x[], y[]
 
 while 1:
 
 	if len(temp1) != 0 and !check1:
 		temp1 = file1.readline()
 		list1 = temp1.split(",")
-
+		x.append(list1[pos1])
 	else check1++
 
 	if len(temp2) != 0 and !check2: 
 		temp2 = file2.readline()
 		list2 = temp2.split(",")
-
+		y.append(list2[pos2])
 	else check2++
 
 	if check1 and check2: break
 
+sum1 = sum(x)
+sum2 = sum(y)
+
+av1 = average(sum1, len(x))
+av2 = average(sum2, len(y))
+
+gm1 = gmean(x)
+gm2 = gmean(y)
+
+r = ratio(av1, av2)
+
+d, r = diff(x, y)	
 
