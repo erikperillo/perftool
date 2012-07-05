@@ -55,21 +55,20 @@ check1=check2=0
 x=[]
 y=[]
 
-while 1:
-
-	if len(temp1) != 0 and pos1<=len(temp1) and not(check1):
-		temp1 = file1.readline().strip()
-		list1 = temp1.split(",")
+lineno=1
+while 1 :
+	temp=file1.readline()
+	if not(temp) : break
+	list1 = temp.strip().split(",")
+	if pos1<len(list1) :
 		x.append(list1[pos1])
-	else: check1+=1
+	else: 
+		print "WARNING: could not read field %i from line %i, it has only %i fields" %(pos1,lineno,len(list1)) 
+	lineno+=1
 
-	if len(temp2) != 0 and pos2<=len(temp2) and not(check2): 
-		temp2 = file2.readline().strip()
-		list2 = temp2.split(",")
-		y.append(list2[pos2])
-	else: check2+=1
 
-	if check1 and check2: break
+print "Lista: "
+print x
 
 sum1 = sum(x)
 sum2 = sum(y)
