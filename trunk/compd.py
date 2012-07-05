@@ -4,7 +4,7 @@ import stats
 
 flags = ['ds1=', 'ds2=', 'cf=', 'cl=', 'of1', 'of2', 'of=']
 
-opts, args = getopt.getopt(sys.argv[1:], '', flags)
+opts, args = getopt.getopt(sys.argv[1:], 'd', flags)
 
 dataset1=dataset2=field=output=0
 conf = 95
@@ -17,7 +17,7 @@ for p,v in opts:
         elif p == '--cf':
                 field = v
         elif p == '--cl':
-                conf = v
+                confidence = v
         elif p == '--of1':
                 output = 1
 	elif p == '--of2':
@@ -28,38 +28,46 @@ for p,v in opts:
 file1 = open(dataset1, 'r')
 file2 = open(dataset2, 'r')
 
-temp1 = file1.readline() 
-temp2 = file2.readline()
+temp1 = file1.readline().strip() 
+temp2 = file2.readline().strip()
 
 list1 = temp1.split(",")
 list2 = temp2.split(",")
 
 pos1=pos2=0
 
+print "Comparing metric: (%s)" %(field)
+
 for word in list1:
-	if word == field: break
-	pos1++
+#	print "Comparing (%s) with (%s)" %(word,field)
+	if word == field:
+		print "File ds1: Found %s at column %i" %(field,pos1) 
+		break
+	pos1+=1
 
 for word in list2:
-	if word == field: break
-	pos2++
+	if word == field:
+		print "File ds2: Found %s at column %i" %(field,pos2) 
+		break
+	pos2+=1
 
 check1=check2=0
-x[], y[]
+x=[]
+y=[]
 
 while 1:
 
-	if len(temp1) != 0 and !check1:
-		temp1 = file1.readline()
+	if len(temp1) != 0 and pos1<=len(temp1) and not(check1):
+		temp1 = file1.readline().strip()
 		list1 = temp1.split(",")
 		x.append(list1[pos1])
-	else check1++
+	else: check1+=1
 
-	if len(temp2) != 0 and !check2: 
-		temp2 = file2.readline()
+	if len(temp2) != 0 and pos2<=len(temp2) and not(check2): 
+		temp2 = file2.readline().strip()
 		list2 = temp2.split(",")
 		y.append(list2[pos2])
-	else check2++
+	else: check2+=1
 
 	if check1 and check2: break
 
@@ -72,7 +80,18 @@ av2 = average(sum2, len(y))
 gm1 = gmean(x)
 gm2 = gmean(y)
 
+v1 = var(sum1, sqsum(x), len(x))
+v2 = var(sum1, sqsum(y), len(y))
+
+sd1 = stdev(v1)
+sd2 = stdev(v2)
+
+#c1 = conf(confidence, sd1, len(x))
+#c2 = conf(confidence, sd2, len(y))
+
 r = ratio(av1, av2)
 
 d, r = diff(x, y)	
 
+print "Data set 1: av:%i geomean:%i var:%i stdev:%i"  % (av1, gm1, v1, sd1)
+print "Data set 2: av:%i geomean:%i var:%i stdev:%i"  % (av2, gm2, v2, sd2) 

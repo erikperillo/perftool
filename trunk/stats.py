@@ -8,7 +8,11 @@ def sum(x):
                 s+=n
         return s
 
-def sqsum(x): #calculates the sum of the squares of the values
+def sqsum(x):
+	s2=0
+	for n in x:
+		s2+=pow(n, 2)
+	return s2
 
 def prod(x):
 	p=1
@@ -39,13 +43,13 @@ def gmean(x):
 def var(sum1, sum2, size):
 	return (sum2-(sum1**2/size))/(size-1)
 
-def stdv1(variance)
+def stdv1(variance):
 	return sqrt(variance)
 
 def stdv2(sum1, sum2, size):
 	return sqrt(var(sum1, sum2, size))
 
-def conf(stdev, size):
+def conf(cl, stdev, size):
 	#tstar attribution yet to be coded
 	return tstar*(stdev/sqrt(size))
 
