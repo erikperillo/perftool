@@ -61,36 +61,54 @@ while 1 :
 	if not(temp) : break
 	list1 = temp.strip().split(",")
 	if pos1<len(list1) :
-		x.append(list1[pos1])
+		x.append(float(list1[pos1]))
 	else: 
-		print "WARNING: could not read field %i from line %i, it has only %i fields" %(pos1,lineno,len(list1)) 
+		print "WARNING: could not read field %i from line %i (ds1), it has only %i fields" %(pos1,lineno,len(list1)) 
+	lineno+=1
+
+lineno=1
+while 1 :
+	temp=file2.readline()
+	if not(temp) : break
+	list2 = temp.strip().split(",")
+	if pos2<len(list2) :
+		y.append(float(list2[pos2]))
+	else: 
+		print "WARNING: could not read field %i from line %i (ds2), it has only %i fields" %(pos2,lineno,len(list2)) 
 	lineno+=1
 
 
-print "Lista: "
-print x
+# print "List 1: "
+# print x
+# print "List 2: "
+# print y
 
-sum1 = sum(x)
-sum2 = sum(y)
+sum1 = stats.sum(x)
+sum2 = stats.sum(y)
 
-av1 = average(sum1, len(x))
-av2 = average(sum2, len(y))
+av1 = stats.average(sum1, len(x))
+av2 = stats.average(sum2, len(y))
 
-gm1 = gmean(x)
-gm2 = gmean(y)
+# TODO: debug gmean
+gm1 = gm2 = 0.0
+#gm1 = stats.gmean(x)
+#gm2 = stats.gmean(y)
 
-v1 = var(sum1, sqsum(x), len(x))
-v2 = var(sum1, sqsum(y), len(y))
+v1 = stats.var(sum1, stats.sqsum(x), len(x))
+v2 = stats.var(sum1, stats.sqsum(y), len(y))
 
-sd1 = stdev(v1)
-sd2 = stdev(v2)
+# TODO: implement stdev
+sd1 = sd2 = 0.0
+#sd1 = stats.stdev(v1)
+#sd2 = stats.stdev(v2)
 
+# TODO: implement conf
 #c1 = conf(confidence, sd1, len(x))
 #c2 = conf(confidence, sd2, len(y))
 
-r = ratio(av1, av2)
+r = stats.ratio(av1, av2)
 
-d, r = diff(x, y)	
+d, r = stats.diff(x, y)	
 
-print "Data set 1: av:%i geomean:%i var:%i stdev:%i"  % (av1, gm1, v1, sd1)
-print "Data set 2: av:%i geomean:%i var:%i stdev:%i"  % (av2, gm2, v2, sd2) 
+print "Data set 1: av:%f geomean:%f var:%f stdev:%f"  % (av1, gm1, v1, sd1)
+print "Data set 2: av:%f geomean:%f var:%f stdev:%f"  % (av2, gm2, v2, sd2) 
