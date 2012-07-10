@@ -31,7 +31,9 @@ def nroot(val, n):
 
 		while (xk != x0):
 			x0 = xk
-			xk = x0 - ((pow(x0, n)-val)/n*pow(x0, n-1))
+			a = pow(x0, n) - val
+			b = pow(x0, n-1) * n
+			xk = x0 - (float(a)/float(b))
 	return xk
 	
 def average(ssum, ssize):
@@ -50,11 +52,22 @@ def stdv2(sum1, sum2, size):
 	return math.sqrt(var(sum1, sum2, size))
 
 def conf(cl, stdev, size):
-	#tstar attribution yet to be coded
+
+	table = open('students_t_table.txt', 'r')
+	line1 = table.readline().strip().split(' ')
+	pos=0
+	while pos < len(line1):
+		if line1[pos] == cl: break
+		pos+=1
+	if pos == len(line1):
+		print "WARNING: confidence level not supported"
+		return -1
+	#yet to be finished
+
 	return tstar*(stdev/math.sqrt(size))
 
 def ratio(val1 , val2):
-	return val1/val2
+	return float(val1)/float(val2)
 
 def diff(x, y):
 
