@@ -99,8 +99,8 @@ v2 = stats.var(sum1, stats.sqsum(y), len(y))
 
 # TODO: implement stdev
 sd1 = sd2 = 0.0
-#sd1 = stats.stdev(v1)
-#sd2 = stats.stdev(v2)
+#sd1 = stats.stdv1(v1)
+#sd2 = stats.stdv1(v2)
 
 # TODO: implement conf
 #c1 = conf(confidence, sd1, len(x))
