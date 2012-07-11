@@ -90,25 +90,64 @@ av1 = stats.average(sum1, len(x))
 av2 = stats.average(sum2, len(y))
 
 # TODO: debug gmean
+# done
 gm1 = gm2 = 0.0
-#gm1 = stats.gmean(x)
-#gm2 = stats.gmean(y)
+gm1 = stats.gmean(x)
+gm2 = stats.gmean(y)
 
 v1 = stats.var(sum1, stats.sqsum(x), len(x))
 v2 = stats.var(sum1, stats.sqsum(y), len(y))
 
 # TODO: implement stdev
+# already exists
 sd1 = sd2 = 0.0
-#sd1 = stats.stdv1(v1)
-#sd2 = stats.stdv1(v2)
+sd1 = stats.stdv1(v1)
+sd2 = stats.stdv1(v2)
 
 # TODO: implement conf
-#c1 = conf(confidence, sd1, len(x))
-#c2 = conf(confidence, sd2, len(y))
+# done
+c1 = conf(confidence, sd1, len(x))
+c2 = conf(confidence, sd2, len(y))
 
-r = stats.ratio(av1, av2)
+avr = stats.ratio(av1, av2)
+gmr = stats.ratio(gm1, gm2)
 
 d, r = stats.diff(x, y)	
 
-print "Data set 1: av:%f geomean:%f var:%f stdev:%f"  % (av1, gm1, v1, sd1)
-print "Data set 2: av:%f geomean:%f var:%f stdev:%f"  % (av2, gm2, v2, sd2) 
+if output == 1:
+	print "Data set 1: av:%f geomean:%f var:%f stdev:%f"  % (av1, gm1, v1, sd1)
+	print "Data set 2: av:%f geomean:%f var:%f stdev:%f"  % (av2, gm2, v2, sd2)
+	print "Ratio: average:%f geometric mean:%f" % (avr, gmr) 
+	print "Diff: ",  d
+	if not r:
+		print "%i values were disregarded for one of the data sets being larger than the other"
+
+elif output == 2:
+	print "DATA SET 1"
+	print "average: ", av1
+	print "geometric mean: ", gm1
+	print "variance: ", v1
+	print "standard deviation: ", sd1
+	print "confidence interval: ", c1
+	print "\nDATA SET 2"
+	print "average: ", av2  
+        print "geometric mean: ", gm2
+        print "variance: ", v2  
+        print "standard deviation: ", sd2
+        print "confidence interval: ", c2
+	print "\nAverage ratio: ", avr
+	print "Geometric mean ratio: ", gmr
+	print "Diff: ", d
+	if not r:
+		print "%i values were disregarded for one of the data sets being larger than the other"			
+
+else:
+	format = {'ds1-av':av1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds1-gm':gm1,'ds2-av':av2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'ds2-gm':gm2, 'av-ratio':avr, 'gm-ratio':gmr}
+	output = output.replace(')', ')s')
+	print output % format
+	
+
+
+
+
+
