@@ -16,9 +16,11 @@ def sqsum(x):
 	return s2
 
 def prod(x):
-	p=1.
+	p=long(1)
         for val in x:
-                p *= float(val)
+                p *= long(val)
+#		print "=====",p
+#	print "----------------->",p
 	return p	
 
 def nroot(val, n):
@@ -27,14 +29,15 @@ def nroot(val, n):
 	elif n == 2:
 		return math.sqrt(val)
 	else:
-		x0 = 0 
+		x0 = 0
 		xk = math.sqrt(val)
-
+	
 		while (xk != x0):
 			x0 = xk
+#			print x0,n,val
 			a = pow(x0, n) - val
 			b = pow(x0, n-1) * n
-			xk = x0 - (float(a)/float(b))
+			xk = x0 - (long(a)/long(b))
 	return xk
 	
 def average(ssum, ssize):
@@ -56,19 +59,19 @@ def conf(cl, stdev, df):
 
 	table = open('students_t_table.txt', 'r')
 	line1 = table.readline().strip().split(' ')
-	print line1
+#	print line1
 	pos=1
 	list=[]
 	while pos < len(line1):
 		if float(line1[pos]) == cl: break
 		pos+=1
-	print pos
+#	print pos
 	if pos == len(line1):
 		print "WARNING: confidence level not supported"
 		return -1
 	while 1:
 		line = table.readline().strip()
-		print line
+#		print line
 		if len(line) == 0:
 			 break
 		if df<=30 and re.match(r'^'+str(df), line):
@@ -81,7 +84,9 @@ def conf(cl, stdev, df):
 		return -1
 	
 	tstar = float(list[pos])
-	print tstar
+#	print tstar
+
+	table.close()
 
 	return tstar*(float(stdev)/float(math.sqrt(df+1)))
 

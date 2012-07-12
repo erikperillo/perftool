@@ -7,7 +7,7 @@ flags = ['ds1=', 'ds2=', 'cf=', 'cl=', 'of1', 'of2', 'of=']
 opts, args = getopt.getopt(sys.argv[1:], 'd', flags)
 
 dataset1=dataset2=field=output=0
-conf = 95
+confidence = 95 # 95 eh o valor default do intervalo de confianca
 
 for p,v in opts:
         if p == '--ds1':
@@ -25,8 +25,26 @@ for p,v in opts:
 	elif p == '--of':
 		output = v
 
+if not dataset1 or not dataset2:
+	print "One or more data sets missing"
+	sys.exit(1)
+if not field:
+	print "Field to be compared missing."
+	sys.exit(2)
+if not output:
+	print "Output format missing."
+	sys.exit(3)
+
+try:
 file1 = open(dataset1, 'r')
+except IOError:
+	print "WARNING: could not read file ", dataset1
+	sys.exit(4)
+try:
 file2 = open(dataset2, 'r')
+except IOError:
+	print "WARNING: could not read file ", dataset2
+	sys.exit(5)
 
 temp1 = file1.readline().strip() 
 temp2 = file2.readline().strip()
@@ -51,7 +69,7 @@ for word in list2:
 		break
 	pos2+=1
 
-check1=check2=0
+#check1=check2=0
 x=[]
 y=[]
 
@@ -77,6 +95,8 @@ while 1 :
 		print "WARNING: could not read field %i from line %i (ds2), it has only %i fields" %(pos2,lineno,len(list2)) 
 	lineno+=1
 
+file1.close()
+file2.close()
 
 # print "List 1: "
 # print x
@@ -91,7 +111,7 @@ av2 = stats.average(sum2, len(y))
 
 # TODO: debug gmean
 # done
-gm1 = gm2 = 0.0
+#gm1 = gm2 = 0.0
 gm1 = stats.gmean(x)
 gm2 = stats.gmean(y)
 
@@ -100,17 +120,17 @@ v2 = stats.var(sum1, stats.sqsum(y), len(y))
 
 # TODO: implement stdev
 # already exists
-sd1 = sd2 = 0.0
+#sd1 = sd2 = 0.0
 sd1 = stats.stdv1(v1)
 sd2 = stats.stdv1(v2)
 
 # TODO: implement conf
 # done
-c1 = conf(confidence, sd1, len(x))
-c2 = conf(confidence, sd2, len(y))
+c1 = stats.conf(confidence, sd1, len(x))
+c2 = stats.conf(confidence, sd2, len(y))
 
 avr = stats.ratio(av1, av2)
-gmr = stats.ratio(gm1, gm2)
+#gmr = stats.ratio(gm1, gm2)
 
 d, r = stats.diff(x, y)	
 
@@ -125,24 +145,24 @@ if output == 1:
 elif output == 2:
 	print "DATA SET 1"
 	print "average: ", av1
-	print "geometric mean: ", gm1
+#	print "geometric mean: ", gm1
 	print "variance: ", v1
 	print "standard deviation: ", sd1
 	print "confidence interval: ", c1
 	print "\nDATA SET 2"
 	print "average: ", av2  
-        print "geometric mean: ", gm2
+#       print "geometric mean: ", gm2
         print "variance: ", v2  
         print "standard deviation: ", sd2
         print "confidence interval: ", c2
 	print "\nAverage ratio: ", avr
-	print "Geometric mean ratio: ", gmr
+#	print "Geometric mean ratio: ", gmr
 	print "Diff: ", d
 	if not r:
 		print "%i values were disregarded for one of the data sets being larger than the other"			
 
 else:
-	format = {'ds1-av':av1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds1-gm':gm1,'ds2-av':av2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'ds2-gm':gm2, 'av-ratio':avr, 'gm-ratio':gmr}
+	format = {'ds1-av':av1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr}
 	output = output.replace(')', ')s')
 	print output % format
 	
