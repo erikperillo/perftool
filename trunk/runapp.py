@@ -1,17 +1,13 @@
 
 
-import re
 import sys
 import time
 import getopt
-import commands
+import subprocess
 
 flags = 'n:c:o:aw'
 
 opts, args = getopt.getopt(sys.argv[1:],flags)
-
-print opts
-print args
 
 numb=cmd=output=app=wd=0
 
@@ -40,14 +36,24 @@ if not output:
 execute(cmd, numb, app, wd)
 
 
-
 def execute(c, n, a, w):
-	for i in range(n)
-#		status, output = os.system("usr\bin\time " + c)
-#		if (!status)
-		handle = os.popen("/usr/bin/time -f '%x %e %U %S %K %F %R' " + c, 'r', 1)
-			for line in handle:
+
+	cmd = "/usr/bin/time -f '%x %e %U %S %K %F %R' " + c
+	date = time.strftime("%Y-%m-%d_%H.%M.%S", time.localtime())
+	datafile = open(c+'_'+date+'.rdt', 'w')
+	datafile.write("run,t_real,t_user,t_sys,memory_used,major_pagefaults,minor_pagefaults")
+	fail = 0
+
+	for i in range(n):
+		date = time.strftime("%Y-%m-%d_%H.%M.%S", time.localtime())
+		handle = open(c+"_"+date , 'w')
+		p = subprocess.Popen(cmd,shell=True, stdout=handle, stderr=subprocess.PIPE, close_fds=True)
 		handle.close()
-		
+		data = p.stderr.readline().strip().split(" ")
+		if not(data[0]):
+			datafile.write("%i,"%i+data[1]+','+data[2]+','+data[3]+','+data[4]+','+data[5]+','+data[6])
+		else: fail+=1
+									
+	datafile.close()	
 		
 
