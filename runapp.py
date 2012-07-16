@@ -39,11 +39,28 @@ execute(cmd, numb, app, wd)
 def execute(c, n, a, w):
 
 	cmd = "/usr/bin/time -f '%x %e %U %S %K %F %R' " + c
-	date = time.strftime("%Y-%m-%d_%H.%M.%S", time.localtime())
-	datafile = open(c+'_'+date+'.rdt', 'w')
-	datafile.write("run,t_real,t_user,t_sys,memory_used,major_pagefaults,minor_pagefaults")
 	fail = 0
 
+	if not a:
+		datafile = open(output+'.rdt', 'w')
+		datafile.write("run,t_real,t_user,t_sys,memory_used,major_pagefaults,minor_pagefaults")
+	else:
+		datafile = open(output+'.rdt', 'a')
+
+	if w:
+		try:
+			subprocess.Popen("mkdir output")
+		except BaseException:
+			print "WARNING: could not create directory"
+			sys.exit(4)	
+		try:
+			subprocess.Popen("cd /output")
+		except BaseException:
+			print "WARNING: could not enter directory", output 
+			answer = raw_input("continue? (y/n)")
+			if answer == 'n':
+				sys.exit(5)
+			
 	for i in range(n):
 		date = time.strftime("%Y-%m-%d_%H.%M.%S", time.localtime())
 		handle = open(c+"_"+date , 'w')
