@@ -26,7 +26,7 @@ for p,v in opts:
 		output = v
 
 if not dataset1 or not dataset2:
-	print "One or more data sets missing"
+	print "One or more data sets missing."
 	sys.exit(1)
 if not field:
 	print "Field to be compared missing."
@@ -36,12 +36,12 @@ if not output:
 	sys.exit(3)
 
 try:
-file1 = open(dataset1, 'r')
+	file1 = open(dataset1, 'r')
 except IOError:
 	print "WARNING: could not read file ", dataset1
 	sys.exit(4)
 try:
-file2 = open(dataset2, 'r')
+	file2 = open(dataset2, 'r')
 except IOError:
 	print "WARNING: could not read file ", dataset2
 	sys.exit(5)

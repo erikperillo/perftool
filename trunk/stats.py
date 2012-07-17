@@ -16,9 +16,9 @@ def sqsum(x):
 	return s2
 
 def prod(x):
-	p=long(1)
+	p=1
         for val in x:
-                p *= long(val)
+                p *= val
 #		print "=====",p
 #	print "----------------->",p
 	return p	
@@ -32,19 +32,25 @@ def nroot(val, n):
 		x0 = 0
 		xk = math.sqrt(val)
 	
-		while (xk != x0):
+		while xk != x0:
 			x0 = xk
-#			print x0,n,val
+#			print "entrou no while!"
 			a = pow(x0, n) - val
 			b = pow(x0, n-1) * n
-			xk = x0 - (long(a)/long(b))
+			xk = x0 - (float(a)/(b))
+#			print xk
 	return xk
 	
 def average(ssum, ssize):
 	return float(ssum)/float(ssize)
 
 def gmean(x):
-	return nroot(prod(x),len(x))
+	n=len(x)
+#	print n
+	for i in range(n):
+		x[i] = nroot(x[i], n)
+#		print x[i]
+	return prod(x)
 
 def var(sum1, sum2, size):
 	return (sum2-(sum1**2/size))/(size-1)
