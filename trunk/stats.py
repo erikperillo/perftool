@@ -2,6 +2,7 @@
 
 import math
 import re
+import sys
 
 def sum(x):
 	s=0
@@ -11,8 +12,12 @@ def sum(x):
 
 def sqsum(x):
 	s2=0
+#	print 'x:', x
 	for n in x:
-		s2+=pow(n, 2)
+#		print "n:", n
+		s2+=pow(float(n),2.0)
+#		print "s2:", s2
+#	print s2
 	return s2
 
 def prod(x):
@@ -24,38 +29,28 @@ def prod(x):
 	return p	
 
 def nroot(val, n):
-	if val == 1:
-		return 1
-	elif n == 2:
-		return math.sqrt(val)
-	else:
-		x0 = 0
-		xk = math.sqrt(val)
-	
-		while xk != x0:
-			x0 = xk
-#			print "entrou no while!"
-			a = pow(x0, n) - val
-			b = pow(x0, n-1) * n
-			xk = x0 - (float(a)/(b))
-#			print xk
-	return xk
+	return float(pow(val, 1/float(n)))
 	
 def average(ssum, ssize):
 	return float(ssum)/float(ssize)
 
 def gmean(x):
 	n=len(x)
+	y=[]
 #	print n
-	for i in range(n):
-		x[i] = nroot(x[i], n)
+	for val in x:
+		y.append(nroot(val, n))
 #		print x[i]
-	return prod(x)
+	return prod(y)
 
 def var(sum1, sum2, size):
-	return (sum2-(sum1**2/size))/(size-1)
+#	print "sum:", sum1
+#	print "sqsum:",sum2
+#	print "len:",size
+	return (sum2-(pow(sum1,2)/float(size)))/float(size-1)
 
 def stdv1(variance):
+#	print variance
 	return math.sqrt(variance)
 
 def stdv2(sum1, sum2, size):
