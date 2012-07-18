@@ -54,18 +54,18 @@ list2 = temp2.split(",")
 
 pos1=pos2=0
 
-print "Comparing metric: (%s)" %(field)
+#print "Comparing metric: (%s)" %(field)
 
 for word in list1:
 #	print "Comparing (%s) with (%s)" %(word,field)
 	if word == field:
-		print "File ds1: Found %s at column %i" %(field,pos1) 
+#		print "File ds1: Found %s at column %i" %(field,pos1) 
 		break
 	pos1+=1
 
 for word in list2:
 	if word == field:
-		print "File ds2: Found %s at column %i" %(field,pos2) 
+#		print "File ds2: Found %s at column %i" %(field,pos2) 
 		break
 	pos2+=1
 
@@ -130,39 +130,39 @@ c1 = stats.conf(confidence, sd1, len(x))
 c2 = stats.conf(confidence, sd2, len(y))
 
 avr = stats.ratio(av1, av2)
-#gmr = stats.ratio(gm1, gm2)
+gmr = stats.ratio(gm1, gm2)
 
 d, r = stats.diff(x, y)	
 
 if output == 1:
-	print "Data set 1: av:%f geomean:%f var:%f stdev:%f"  % (av1, gm1, v1, sd1)
-	print "Data set 2: av:%f geomean:%f var:%f stdev:%f"  % (av2, gm2, v2, sd2)
+	print "Data set 1: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av1, gm1, v1, sd1, c1)
+	print "Data set 2: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av2, gm2, v2, sd2, c2)
 	print "Ratio: average:%f geometric mean:%f" % (avr, gmr) 
 	print "Diff: ",  d
-	if not r:
-		print "%i values were disregarded for one of the data sets being larger than the other"
+	if r:
+		print "%i values were disregarded for one of the data sets being larger than the other" %i
 
 elif output == 2:
 	print "DATA SET 1"
 	print "average: ", av1
-#	print "geometric mean: ", gm1
+	print "geometric mean: ", gm1
 	print "variance: ", v1
 	print "standard deviation: ", sd1
 	print "confidence interval: ", c1
 	print "\nDATA SET 2"
 	print "average: ", av2  
-#       print "geometric mean: ", gm2
+        print "geometric mean: ", gm2
         print "variance: ", v2  
         print "standard deviation: ", sd2
         print "confidence interval: ", c2
 	print "\nAverage ratio: ", avr
-#	print "Geometric mean ratio: ", gmr
+	print "Geometric mean ratio: ", gmr
 	print "Diff: ", d
-	if not r:
-		print "%i values were disregarded for one of the data sets being larger than the other"			
+	if r:
+		print "%i values were disregarded for one of the data sets being larger than the other"	%i		
 
 else:
-	format = {'ds1-av':av1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr}
+	format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'gm-ratio':gmr, 'diff':d}
 	output = output.replace(')', ')s')
 	print output % format
 	
