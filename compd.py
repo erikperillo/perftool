@@ -1,15 +1,32 @@
 #!/usr/bin/env python
 
-import getopt
 import sys
 import stats
+import getopt
 
-flags = ['ds1=', 'ds2=', 'cf=', 'cl=', 'of1', 'of2', 'of=']
+def usage():
+	print "Help on script compd"
+	print "NAME"
+	print "\tcompd"
+	print "DESCRIPTION"
+	print "\tThe compd script analyzes a determined feature of an application"
+	print "ARGUMENTS"
+	print "\t--ds1 file1name --ds2 file2name: The rdt files to be compared. The complete path is needed if the files are not in the same directory as the script"
+	print "\t--ds filename: The rdt file to be analyzed. The complete path is needed if the file are not in the same directory as the script"
+	print "\t--cf column: The feature to be anlyzed or/and compared. It corresponds to one of the columns of the rdt file(s). You must enter this argument."
+	print "\t--cl number: The confidence level for the confidence interval. The values supported are 20%, 50%, 80%, 90%, 95%, 98%, 99%, 99.9%. In case no confidence level is set, the confidence interval will be calculated with a confidence value of 95%"
+	print "\t--of1: Primary output format. There will be one line for each data set plus one line per each comparison result if there are two data sets. If no format is selected, the results will be displayed in this format."  
+	print "\t--of2: Seconday output format. there will be a new line for each statistical result and comparison result if there are two data sets."
+	print "\t--of string: User-defined output format. This format can be definded by a string one or more of the following:" 
+	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio), (diff)"
 
-opts, args = getopt.getopt(sys.argv[1:], 'd', flags)
+flags = ['ds1=', 'ds2=', 'ds=', 'cf=', 'cl=', 'of1', 'of2', 'of=']
 
-dataset1=dataset2=field=output=0
-confidence = 95 # 95 eh o valor default do intervalo de confianca
+opts, args = getopt.getopt(sys.argv[1:], 'h', flags)
+
+dataset1=dataset2=dataset=field=0
+confidence = 95 # Default confidence level
+output = 1 # Default output
 
 for p,v in opts:
         if p == '--ds1':
@@ -28,42 +45,49 @@ for p,v in opts:
 		output = 2
 	elif p == '--of':
 		output = v
+	elif h == '-h':
+		usage();
+
+if not field:
+        print "Field to be analyzed missing."
+        sys.exit(1)
 
 if not dataset:
         if not dataset1 or not dataset2:
                 print "One or more data sets missing."
                 sys.exit(1)
+	try:
+        	file1 = open(dataset1, 'r')
+	except IOError:
+        	print "WARNING: could not read file ", dataset1
+        	sys.exit(2)
+	try:
+        	file2 = open(dataset2, 'r')
+	except IOError:
+        	print "WARNING: could not read file ", dataset2
+        	sys.exit(2)
+
+	temp1 = file1.readline().strip() 
+	temp2 = file2.readline().strip()
+
+	list1 = temp1.split(",")
+	list2 = temp2.split(",")
+
 else
         if dataset1 or dataset2:
                 print "Use either --ds or --ds1 and --ds2."
 #                usage();
                 sys.exit(1)
+	try:
+		file = open(dataset, 'r')
+	except IOError:
+		print "WARNING: could not read file", dataset
+		sys.exit(2)
 
-if not field:
-	print "Field to be analyzed missing."
-	sys.exit(2)
+	temp = file.readline().strip()
+	list = temp.split(',')
 
-if not output:
-        output = 1  # Default output
-
-try:
-	file1 = open(dataset1, 'r')
-except IOError:
-	print "WARNING: could not read file ", dataset1
-	sys.exit(4)
-try:
-	file2 = open(dataset2, 'r')
-except IOError:
-	print "WARNING: could not read file ", dataset2
-	sys.exit(5)
-
-temp1 = file1.readline().strip() 
-temp2 = file2.readline().strip()
-
-list1 = temp1.split(",")
-list2 = temp2.split(",")
-
-pos1=pos2=0
+pos1=pos2=0	
 
 #print "Comparing metric: (%s)" %(field)
 
@@ -174,6 +198,7 @@ elif output == 2:
 
 else:
 	format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'gm-ratio':gmr, 'diff':d}
+	output = output.replace('(', '%(')
 	output = output.replace(')', ')s')
 	print output % format
 	
