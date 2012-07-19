@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import getopt
 import sys
 import stats
@@ -14,6 +16,8 @@ for p,v in opts:
                 dataset1 = v
         elif p == '--ds2':
                 dataset2 = v
+        elif p == '--ds':
+                dataset = v
         elif p == '--cf':
                 field = v
         elif p == '--cl':
@@ -25,15 +29,22 @@ for p,v in opts:
 	elif p == '--of':
 		output = v
 
-if not dataset1 or not dataset2:
-	print "One or more data sets missing."
-	sys.exit(1)
+if not dataset:
+        if not dataset1 or not dataset2:
+                print "One or more data sets missing."
+                sys.exit(1)
+else
+        if dataset1 or dataset2:
+                print "Use either --ds or --ds1 and --ds2."
+#                usage();
+                sys.exit(1)
+
 if not field:
-	print "Field to be compared missing."
+	print "Field to be analyzed missing."
 	sys.exit(2)
+
 if not output:
-	print "Output format missing."
-	sys.exit(3)
+        output = 1  # Default output
 
 try:
 	file1 = open(dataset1, 'r')
@@ -138,9 +149,9 @@ if output == 1:
 	print "Data set 1: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av1, gm1, v1, sd1, c1)
 	print "Data set 2: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av2, gm2, v2, sd2, c2)
 	print "Ratio: average:%f geometric mean:%f" % (avr, gmr) 
-	print "Diff: ",  d
-	if r:
-		print "%i values were disregarded for one of the data sets being larger than the other" %i
+#	print "Diff: ",  d
+#	if r:
+#		print "%i values were disregarded for one of the data sets being larger than the other" %i
 
 elif output == 2:
 	print "DATA SET 1"
