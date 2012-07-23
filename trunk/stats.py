@@ -94,22 +94,5 @@ def conf(cl, stdev, df):
 def ratio(val1 , val2):
 	return float(val1)/float(val2)
 
-def diff(x, y):
-
-        dif=[]
-
-        if len(x) > len(y):
-                n = len(y)
-                d = len(x) - len(y)
-        elif len(x) < len(y):
-                n = len(x)
-                d = len(y) - len(x)
-        else:
-                n = len(x)
-                d = 0
-
-        for i in range(n):
-                dif.append(x[i]-y[i])
-
-        return dif, d
-
+def diff(val1, val2):
+	return val1-val2

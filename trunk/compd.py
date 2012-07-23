@@ -20,13 +20,53 @@ def usage():
 	print "\t--of string: User-defined output format. This format can be definded by a string one or more of the following:" 
 	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio), (diff)"
 
+def search(file, field):
+
+	temp = file.readline().strip()
+	list = temp.split(',')
+	pos=0
+
+	for word in list:
+#       	print "Comparing (%s) with (%s)" %(word,field)
+        	if word == field:
+#               	print "File ds1: Found %s at column %i" %(field,pos1) 
+                	break
+        	pos+=1
+
+	lineno=1
+	column=[]
+
+	while 1 :
+        	temp=file.readline()
+        	if not(temp) : break
+        	list = temp.strip().split(",")
+        	if pos<len(list) :
+                	column.append(float(list[pos]))
+        	else:
+                	print "WARNING: could not read field %i from line %i (ds1), it has only %i fields" %(pos,lineno,len(list))
+        	lineno+=1
+
+	return column 
+
+def calc(x):
+
+	s = stats.sum(x)
+	av = stats.average(sum, len(x))
+	gm = stats.gmean(x)
+	v = stats.var(sum, stats.sqsum(x), len(x))
+	sd = stats.stdv(v)
+	c = stats.conf(confidence, sd, len(x))
+
+	return av, gm, v, sd, c
+
+
 flags = ['ds1=', 'ds2=', 'ds=', 'cf=', 'cl=', 'of1', 'of2', 'of=']
 
 opts, args = getopt.getopt(sys.argv[1:], 'h', flags)
 
 dataset1=dataset2=dataset=field=0
 confidence = 95 # Default confidence level
-output = 1 # Default output
+output = 1 # Default output format
 
 for p,v in opts:
         if p == '--ds1':
@@ -50,12 +90,15 @@ for p,v in opts:
 
 if not field:
         print "Field to be analyzed missing."
+	usage();
         sys.exit(1)
 
 if not dataset:
         if not dataset1 or not dataset2:
                 print "One or more data sets missing."
-                sys.exit(1)
+		usage();
+		sys.exit(1)
+
 	try:
         	file1 = open(dataset1, 'r')
 	except IOError:
@@ -67,140 +110,88 @@ if not dataset:
         	print "WARNING: could not read file ", dataset2
         	sys.exit(2)
 
-	temp1 = file1.readline().strip() 
-	temp2 = file2.readline().strip()
+	list1 = search(list1, field)
+	list2 = search(list2, field)
 
-	list1 = temp1.split(",")
-	list2 = temp2.split(",")
+	file1.close()
+	file2.close()
+
+	av1, gm1, v1, sd1, c1 = calc(list1)
+	av2, gm2, v2, sd2, c2 = calc(list2)
+	avr = stats.ratio(av1, av2)
+	gmr = stats.ratio(gm1, gm2)
+	avd = stats.diff(av1, av2)
+	gmd = stats.diff(gm1, gm2)
+
+	if output == 1:
+		print field
+		print '--'
+        	print "Data set 1: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av1, gm1, v1, sd1, c1)
+	        print "Data set 2: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av2, gm2, v2, sd2, c2)
+        	print "Ratio: average:%f geometric mean:%f" % (avr, gmr)
+	      	print "Diff: average:%f geometric mean:%f" % (avd, gmd)
+		sys.exit()
+
+	elif output == 2:
+		print field
+	        print "\nDATA SET 1"
+	        print "average: ", av1
+		print "confidence interval: [%f,%f]" % (av1-c1, av1+c1)
+	        print "geometric mean: ", gm1
+		print "confidence interval: [%f,%f]" % (gm1-c1, gm1+c1)
+	        print "variance: ", v1
+        	print "standard deviation: ", sd1
+	        print "confidence interval: ", c1
+	        print "\nDATA SET 2"
+	        print "average: ", av2
+		print "confidence interval: [%f,%f]" % (av2-c2, av2+c2)
+	        print "geometric mean: ", gm2
+		print "confidence interval: [%f,%f]" % (gm2-c2, gm2+c2)
+	        print "variance: ", v2
+	        print "standard deviation: ", sd2
+	        print "confidence interval: ", c2
+	        print "\nAverage ratio: ", avr
+	        print "Geometric mean ratio: ", gmr
+	        print "Average diff: ", avd
+	        print "Geometric mean diff: ", gmd
+		sys.exit()
 
 else
         if dataset1 or dataset2:
                 print "Use either --ds or --ds1 and --ds2."
-#                usage();
+                usage();
                 sys.exit(1)
+
 	try:
 		file = open(dataset, 'r')
 	except IOError:
 		print "WARNING: could not read file", dataset
 		sys.exit(2)
 
-	temp = file.readline().strip()
-	list = temp.split(',')
+	list = search(list, field)
+	file.close()
+	av, gm, v, sd, c = calc(list)
 
-pos1=pos2=0	
+	if output == 1:
+		print field 
+		print '--'
+		print "average:%f geometric mean:%f variance:%f standard deviation:%f confidence:%f"  % (av, gm, v, sd, c)
+		sys.exit()
 
-#print "Comparing metric: (%s)" %(field)
+	elif output == 2:
+		print field
+		print "\naverage: ", av
+		print "confidence interval: [%f,%f]" % (av-c, av+c)
+		print "\ngeometric mean: ", gm
+		print "confidence interval: [%f,%f]" % (gm-c, gm+c)
+		print "\nvariance: ", v
+		print "standard deviation: ", sd
+		sys.exit()
 
-for word in list1:
-#	print "Comparing (%s) with (%s)" %(word,field)
-	if word == field:
-#		print "File ds1: Found %s at column %i" %(field,pos1) 
-		break
-	pos1+=1
-
-for word in list2:
-	if word == field:
-#		print "File ds2: Found %s at column %i" %(field,pos2) 
-		break
-	pos2+=1
-
-#check1=check2=0
-x=[]
-y=[]
-
-lineno=1
-while 1 :
-	temp=file1.readline()
-	if not(temp) : break
-	list1 = temp.strip().split(",")
-	if pos1<len(list1) :
-		x.append(float(list1[pos1]))
-	else: 
-		print "WARNING: could not read field %i from line %i (ds1), it has only %i fields" %(pos1,lineno,len(list1)) 
-	lineno+=1
-
-lineno=1
-while 1 :
-	temp=file2.readline()
-	if not(temp) : break
-	list2 = temp.strip().split(",")
-	if pos2<len(list2) :
-		y.append(float(list2[pos2]))
-	else: 
-		print "WARNING: could not read field %i from line %i (ds2), it has only %i fields" %(pos2,lineno,len(list2)) 
-	lineno+=1
-
-file1.close()
-file2.close()
-
-# print "List 1: "
-# print x
-# print "List 2: "
-# print y
-
-sum1 = stats.sum(x)
-sum2 = stats.sum(y)
-
-av1 = stats.average(sum1, len(x))
-av2 = stats.average(sum2, len(y))
-
-# TODO: debug gmean
-# done
-#gm1 = gm2 = 0.0
-gm1 = stats.gmean(x)
-gm2 = stats.gmean(y)
-
-v1 = stats.var(sum1, stats.sqsum(x), len(x))
-v2 = stats.var(sum1, stats.sqsum(y), len(y))
-
-# TODO: implement stdev
-# already exists
-#sd1 = sd2 = 0.0
-sd1 = stats.stdv1(v1)
-sd2 = stats.stdv1(v2)
-
-# TODO: implement conf
-# done
-c1 = stats.conf(confidence, sd1, len(x))
-c2 = stats.conf(confidence, sd2, len(y))
-
-avr = stats.ratio(av1, av2)
-gmr = stats.ratio(gm1, gm2)
-
-d, r = stats.diff(x, y)	
-
-if output == 1:
-	print "Data set 1: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av1, gm1, v1, sd1, c1)
-	print "Data set 2: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av2, gm2, v2, sd2, c2)
-	print "Ratio: average:%f geometric mean:%f" % (avr, gmr) 
-#	print "Diff: ",  d
-#	if r:
-#		print "%i values were disregarded for one of the data sets being larger than the other" %i
-
-elif output == 2:
-	print "DATA SET 1"
-	print "average: ", av1
-	print "geometric mean: ", gm1
-	print "variance: ", v1
-	print "standard deviation: ", sd1
-	print "confidence interval: ", c1
-	print "\nDATA SET 2"
-	print "average: ", av2  
-        print "geometric mean: ", gm2
-        print "variance: ", v2  
-        print "standard deviation: ", sd2
-        print "confidence interval: ", c2
-	print "\nAverage ratio: ", avr
-	print "Geometric mean ratio: ", gmr
-	print "Diff: ", d
-	if r:
-		print "%i values were disregarded for one of the data sets being larger than the other"	%i		
-
-else:
-	format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'gm-ratio':gmr, 'diff':d}
-	output = output.replace('(', '%(')
-	output = output.replace(')', ')s')
-	print output % format
+format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd, 'ds-av':av, 'ds-gm':gm, 'ds-c':c, 'ds-std':sd, 'ds-var':v}
+output = output.replace('(', '%(')
+output = output.replace(')', ')s')
+print output % format
 	
 
 
