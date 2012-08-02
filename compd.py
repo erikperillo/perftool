@@ -17,8 +17,9 @@ def usage():
 	print "\t--cl number: The confidence level for the confidence interval. The values supported are 20%, 50%, 80%, 90%, 95%, 98%, 99%, 99.9%. In case no confidence level is set, the confidence interval will be calculated with a confidence value of 95%"
 	print "\t--of1: Primary output format. There will be one line for each data set plus one line per each comparison result if there are two data sets. If no format is selected, the results will be displayed in this format."  
 	print "\t--of2: Seconday output format. there will be a new line for each statistical result and comparison result if there are two data sets."
-	print "\t--of string: User-defined output format. This format can be definded by a string one or more of the following:" 
-	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio), (diff)"
+	print "\t--of string: User-defined output format. This format can be definded by a string containing one or more of the following:" 
+	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio), (av-diff), (gm-diff) for a pair of data sets"
+	print "\t\tor (ds-av), (ds-gm), (ds-ci), (ds-std), (ds-var) for a single data set."
 
 def search(file, field):
 
@@ -49,13 +50,14 @@ def search(file, field):
 	return column 
 
 def calc(x):
-
-	s = stats.sum(x)
-	av = stats.average(sum, len(x))
+	
+	size = len(x)
+	sum = stats.sum(x)
+	av = stats.average(sum, size)
 	gm = stats.gmean(x)
-	v = stats.var(sum, stats.sqsum(x), len(x))
-	sd = stats.stdv(v)
-	c = stats.conf(confidence, sd, len(x))
+	v = stats.var(sum, stats.sqsum(x), size)
+	sd = stats.stdv1(v)
+	c = stats.conf(confidence, sd, size)
 
 	return av, gm, v, sd, c
 
@@ -110,8 +112,8 @@ if not dataset:
         	print "WARNING: could not read file ", dataset2
         	sys.exit(2)
 
-	list1 = search(list1, field)
-	list2 = search(list2, field)
+	list1 = search(file1, field)
+	list2 = search(file2, field)
 
 	file1.close()
 	file2.close()
@@ -156,7 +158,7 @@ if not dataset:
 	        print "Geometric mean diff: ", gmd
 		sys.exit()
 
-else
+else:
         if dataset1 or dataset2:
                 print "Use either --ds or --ds1 and --ds2."
                 usage();
