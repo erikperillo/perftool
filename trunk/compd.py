@@ -132,7 +132,6 @@ if not dataset:
 	        print "Data set 2: av:%f geomean:%f var:%f stdev:%f conf:%f"  % (av2, gm2, v2, sd2, c2)
         	print "Ratio: average:%f geometric mean:%f" % (avr, gmr)
 	      	print "Diff: average:%f geometric mean:%f" % (avd, gmd)
-		sys.exit()
 
 	elif output == 2:
 		print field
@@ -156,7 +155,12 @@ if not dataset:
 	        print "Geometric mean ratio: ", gmr
 	        print "Average diff: ", avd
 	        print "Geometric mean diff: ", gmd
-		sys.exit()
+	
+	else:
+		format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd}
+                output = output.replace('(', '%(')
+                output = output.replace(')', ')s')
+                print output % format
 
 else:
         if dataset1 or dataset2:
@@ -170,7 +174,7 @@ else:
 		print "WARNING: could not read file", dataset
 		sys.exit(2)
 
-	list = search(list, field)
+	list = search(file, field)
 	file.close()
 	av, gm, v, sd, c = calc(list)
 
@@ -178,7 +182,6 @@ else:
 		print field 
 		print '--'
 		print "average:%f geometric mean:%f variance:%f standard deviation:%f confidence:%f"  % (av, gm, v, sd, c)
-		sys.exit()
 
 	elif output == 2:
 		print field
@@ -188,12 +191,11 @@ else:
 		print "confidence interval: [%f,%f]" % (gm-c, gm+c)
 		print "\nvariance: ", v
 		print "standard deviation: ", sd
-		sys.exit()
-
-format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd, 'ds-av':av, 'ds-gm':gm, 'ds-c':c, 'ds-std':sd, 'ds-var':v}
-output = output.replace('(', '%(')
-output = output.replace(')', ')s')
-print output % format
+	else:
+		format = {'ds-av':av, 'ds-gm':gm, 'ds-c':c, 'ds-std':sd, 'ds-var':v}
+		output = output.replace('(', '%(')
+		output = output.replace(')', ')s')
+		print output % format
 	
 
 
