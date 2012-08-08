@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import os
 import sys
 import time
@@ -9,6 +11,7 @@ def execute(c, n, o, a, w):
 
 	cmd = "/usr/bin/time -f '%x %e %U %S %K %F %R' " + c
 	fail = 0
+	wd = None
 
 	if not a:
 		datafile = open(o+'.rdt', 'w')
@@ -19,17 +22,18 @@ def execute(c, n, o, a, w):
 	if w:
 		try:
 			os.mkdir(o)
+			wd = o
 		except OSError as e:
 			if e.errno == errno.EEXIST:
 				print "The directory already exists. Resuming..."
 			else: 
 				print "WARNING: could not create directory (" + e + ")"
-				sys.exit(4)
+				sys.exit(2)
 	
 	for i in range(int(n)):
 		date = time.strftime("%Y-%m-%d_%H.%M.%S", time.localtime())
 		handle = open(o+"_"+date , 'w')
-		p = subprocess.Popen(cmd,shell=True, stdout=handle, stderr=subprocess.PIPE, cwd=o, close_fds=True)
+		p = subprocess.Popen(cmd,shell=True, stdout=handle, stderr=subprocess.PIPE, cwd=wd, close_fds=False)
 		handle.close()
 		data = p.stderr.readline().strip().split(" ")
 		print data
@@ -66,9 +70,9 @@ if not numb:
         sys.exit(1)
 if not cmd:
         print "Application name missing"
-        sys.exit(2)
+        sys.exit(1)
 if not output:
         print "Name for the output file missing"
-        sys.exit(3)
+        sys.exit(1)
 
 execute(cmd, numb, output, app, wd)
