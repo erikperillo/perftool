@@ -7,6 +7,19 @@ import errno
 import getopt
 import subprocess
 
+def usage():
+	print "Help on runapp"
+        print "NAME"
+        print "\trunapp"
+        print "DESCRIPTION"
+        print "\tThe runapp is a tool for collecting certain data about an application"
+        print "ARGUMENTS"
+        print "\t-n N: number of times the application will be run"
+        print "\t-o filename: name of the file on which the collected data will be saved."
+        print "\t-c cmd: a string containig the entire path for the application."
+        print "\t-w: create a directory with the same name as the output file (minus the extension) and runs the application within it (optional)"
+        print "\t-a: append the collected data into an existing file specified (optional)"
+
 def execute(c, n, o, a, w):
 
 	cmd = "/usr/bin/time -f '%x %e %U %S %K %F %R' " + c
@@ -14,10 +27,18 @@ def execute(c, n, o, a, w):
 	wd = None
 
 	if not a:
-		datafile = open(o+'.rdt', 'w')
+		try:
+			datafile = open(o+'.rdt', 'w')
+		except IOError:
+			print "WARNING: could not create file ", o+'.rdt'
+			sys.exit(2)
 		datafile.write("run,t_real,t_user,t_sys,memory_used,major_pagefaults,minor_pagefaults\n")
 	else:
-		datafile = open(o+'.rdt', 'a')
+		try:
+			datafile = open(o+'.rdt', 'a')
+		except IOError:
+			print "WARNING: could not open file ", o+'.rdt'
+			sys.exit(2)
 
 	if w:
 		try:
@@ -49,7 +70,12 @@ def execute(c, n, o, a, w):
 
 flags = 'n:c:o:aw'
 
-opts, args = getopt.getopt(sys.argv[1:],flags)
+try:
+	opts, args = getopt.getopt(sys.argv[1:],flags)
+except GetoptError:
+	print "WARNING: one or more flags you entered requires an argument"
+	usage()
+	sys.exit(1)
 
 numb=cmd=output=app=wd=0
 
@@ -67,12 +93,15 @@ for p,v in opts:
 
 if not numb:
         print "Number of runs missing"
-        sys.exit(1)
+	usage()        
+	sys.exit(1)
 if not cmd:
         print "Application name missing"
-        sys.exit(1)
+	usage()        
+	sys.exit(1)
 if not output:
         print "Name for the output file missing"
+	usage()
         sys.exit(1)
 
 execute(cmd, numb, output, app, wd)
