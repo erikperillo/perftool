@@ -14,11 +14,11 @@ def usage():
         print "DESCRIPTION"
         print "\tThe runapp is a tool for collecting certain data about an application"
         print "ARGUMENTS"
-        print "\t-n N: number of times the application will be run"
-        print "\t-o filename: name of the file on which the collected data will be saved."
-        print "\t-c cmd: a string containig the entire path for the application."
+        print "\t-n N: number of times the application will be run (mandatory)"
+        print "\t-o filename: name of the file (minus the .rdt extension) on which the collected data will be saved (mandatory)"
+        print "\t-c cmd: a string containig the entire path for the application (mandatory)"
         print "\t-w: create a directory with the same name as the output file (minus the extension) and runs the application within it (optional)"
-        print "\t-a: append the collected data into an existing file specified (optional)"
+        print "\t-a: append the collected data into an specified existing file (optional)"
 
 def execute(c, n, o, a, w):
 
@@ -53,11 +53,14 @@ def execute(c, n, o, a, w):
 	
 	for i in range(int(n)):
 		date = time.strftime("%Y-%m-%d_%H.%M.%S", time.localtime())
-		handle = open(o+"_"+date , 'w')
+		#try:
+			handle = open(o+"_"+date , 'w')
+		#except IOError:
+		
 		p = subprocess.Popen(cmd,shell=True, stdout=handle, stderr=subprocess.PIPE, cwd=wd, close_fds=False)
 		handle.close()
 		data = p.stderr.readline().strip().split(" ")
-		print data
+		#print data
 		if not(int(data[0])):
 			datafile.write(str(i+1)+','+data[1]+','+data[2]+','+data[3]+','+data[4]+','+data[5]+','+data[6]+'\n')
 		else: fail+=1
@@ -103,5 +106,7 @@ if not output:
         print "Name for the output file missing"
 	usage()
         sys.exit(1)
+#if re.match(output, .rdt, flags=0):
+#	output.rstrip('.rdt')	
 
 execute(cmd, numb, output, app, wd)
