@@ -106,7 +106,7 @@ if not output:
         print "Name for the output file missing"
 	usage()
         sys.exit(1)
-#if re.match(output, .rdt, flags=0):
-#	output.rstrip('.rdt')	
+if o.find('.rdt') != -1:
+	o.rstrip('.rdt')
 
 execute(cmd, numb, output, app, wd)
