@@ -54,13 +54,13 @@ def execute(c, n, o, a, w):
 	for i in range(int(n)):
 		date = time.strftime("%Y-%m-%d_%H.%M.%S", time.localtime())
 		#try:
-			handle = open(o+"_"+date , 'w')
+		handle = open(o+"_"+date , 'w')
 		#except IOError:
 		
 		p = subprocess.Popen(cmd,shell=True, stdout=handle, stderr=subprocess.PIPE, cwd=wd, close_fds=False)
 		handle.close()
 		data = p.stderr.readline().strip().split(" ")
-		#print data
+		print data
 		if not(int(data[0])):
 			datafile.write(str(i+1)+','+data[1]+','+data[2]+','+data[3]+','+data[4]+','+data[5]+','+data[6]+'\n')
 		else: fail+=1
@@ -106,7 +106,7 @@ if not output:
         print "Name for the output file missing"
 	usage()
         sys.exit(1)
-if o.find('.rdt') != -1:
-	o.rstrip('.rdt')
+if output.find('.rdt') != -1:
+	output.rstrip('.rdt')
 
 execute(cmd, numb, output, app, wd)
