@@ -56,8 +56,13 @@ def calc(x):
 	av = stats.average(sum, size)
 	gm = stats.gmean(x)
 	v = stats.var(sum, stats.sqsum(x), size)
-	sd = stats.stdv1(v)
-	c = stats.conf(confidence, sd, size)
+
+	if v != 'error':
+		sd = stats.stdv1(v)
+		c = stats.conf(confidence, sd, size)
+	else:
+		sd = 'error'
+		c = 'none'
 
 	return av, gm, v, sd, c
 
@@ -137,17 +142,21 @@ if not dataset:
 		print field
 	        print "\nDATA SET 1"
 	        print "average: ", av1
-		print "confidence interval: [%f,%f]" % (av1-c1, av1+c1)
+		if c1 != 'none':
+			print "confidence interval: [%f,%f]" % (av1-c1, av1+c1)
 	        print "geometric mean: ", gm1
-		print "confidence interval: [%f,%f]" % (gm1-c1, gm1+c1)
+		if c1 != 'none':
+			print "confidence interval: [%f,%f]" % (gm1-c1, gm1+c1)
 	        print "variance: ", v1
         	print "standard deviation: ", sd1
 	        print "confidence interval: ", c1
 	        print "\nDATA SET 2"
 	        print "average: ", av2
-		print "confidence interval: [%f,%f]" % (av2-c2, av2+c2)
+		if c2 != 'none':
+			print "confidence interval: [%f,%f]" % (av2-c2, av2+c2)
 	        print "geometric mean: ", gm2
-		print "confidence interval: [%f,%f]" % (gm2-c2, gm2+c2)
+		if c2 != 'none':
+			print "confidence interval: [%f,%f]" % (gm2-c2, gm2+c2)
 	        print "variance: ", v2
 	        print "standard deviation: ", sd2
 	        print "confidence interval: ", c2
@@ -186,9 +195,11 @@ else:
 	elif output == 2:
 		print field
 		print "\naverage: ", av
-		print "confidence interval: [%f,%f]" % (av-c, av+c)
+		if c != 'none':
+			print "confidence interval: [%f,%f]" % (av-c, av+c)
 		print "\ngeometric mean: ", gm
-		print "confidence interval: [%f,%f]" % (gm-c, gm+c)
+		if c != 'none':
+			print "confidence interval: [%f,%f]" % (gm-c, gm+c)
 		print "\nvariance: ", v
 		print "standard deviation: ", sd
 	else:
