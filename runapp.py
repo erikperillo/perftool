@@ -60,7 +60,7 @@ def execute(c, n, o, a, w):
 		p = subprocess.Popen(cmd,shell=True, stdout=handle, stderr=subprocess.PIPE, cwd=wd, close_fds=False)
 		handle.close()
 		data = p.stderr.readline().strip().split(" ")
-		print data
+	#	print data
 		if not(int(data[0])):
 			datafile.write(str(i+1)+','+data[1]+','+data[2]+','+data[3]+','+data[4]+','+data[5]+','+data[6]+'\n')
 		else: fail+=1
