@@ -49,7 +49,7 @@ def search(file, field):
 
 	return column 
 
-def calc(x):
+def calc(x, conf):
 	
 	size = len(x)
 	sum = stats.sum(x)
@@ -59,7 +59,7 @@ def calc(x):
 
 	if v != 'error':
 		sd = stats.stdv1(v)
-		c = stats.conf(confidence, sd, size)
+		c = stats.conf(float(conf), sd, size)
 	else:
 		sd = 'error'
 		c = 'none'
@@ -123,8 +123,8 @@ if not dataset:
 	file1.close()
 	file2.close()
 
-	av1, gm1, v1, sd1, c1 = calc(list1)
-	av2, gm2, v2, sd2, c2 = calc(list2)
+	av1, gm1, v1, sd1, c1 = calc(list1, confidence)
+	av2, gm2, v2, sd2, c2 = calc(list2, confidence)
 	avr = stats.ratio(av1, av2)
 	gmr = stats.ratio(gm1, gm2)
 	avd = stats.diff(av1, av2)
@@ -185,7 +185,7 @@ else:
 
 	list = search(file, field)
 	file.close()
-	av, gm, v, sd, c = calc(list)
+	av, gm, v, sd, c = calc(list, confidence)
 
 	if output == 1:
 		print field 

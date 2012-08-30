@@ -97,6 +97,8 @@ def conf(cl, stdev, df):
 	return tstar*(float(stdev)/float(math.sqrt(df+1)))
 
 def ratio(val1 , val2):
+	if val == 0:
+		return 0
 	return float(val1)/float(val2)
 
 def diff(val1, val2):
