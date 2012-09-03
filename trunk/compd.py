@@ -17,8 +17,8 @@ def usage():
 	print "\t--cl number: The confidence level for the confidence interval. The values supported are 20%, 50%, 80%, 90%, 95%, 98%, 99%, 99.9%. In case no confidence level is set, the confidence interval will be calculated with a confidence value of 95%"
 	print "\t--of1: Primary output format. There will be one line for each data set plus one line per each comparison result if there are two data sets. If no format is selected, the results will be displayed in this format."  
 	print "\t--of2: Seconday output format. there will be a new line for each statistical result and comparison result if there are two data sets."
-	print "\t--of string: User-defined output format. This format can be definded by a string containing one or more of the following:" 
-	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio), (av-diff), (gm-diff) for a pair of data sets"
+	print "\t--of string: User-defined output format. This format can be definded by a string containing one or more of the following tokens:" 
+	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio),(av-ratio-low), (av-ratio-up), (av-diff), (gm-diff),  for a pair of data sets"
 	print "\t\tor (ds-av), (ds-gm), (ds-ci), (ds-std), (ds-var) for a single data set."
 
 def search(file, field):
@@ -94,7 +94,7 @@ for p,v in opts:
 		output = v
 	elif h == '-h':
 		usage();
-
+print field
 if not field:
         print "Field to be analyzed missing."
 	usage();
@@ -126,6 +126,8 @@ if not dataset:
 	av1, gm1, v1, sd1, c1 = calc(list1, confidence)
 	av2, gm2, v2, sd2, c2 = calc(list2, confidence)
 	avr = stats.ratio(av1, av2)
+	avr-up = stats.ratio(av1, av2, c1, c2, 'u')
+	avr-low = stats.ratio(av1, av2, c1, c2, 'l')
 	gmr = stats.ratio(gm1, gm2)
 	avd = stats.diff(av1, av2)
 	gmd = stats.diff(gm1, gm2)
@@ -166,7 +168,7 @@ if not dataset:
 	        print "Geometric mean diff: ", gmd
 	
 	else:
-		format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd}
+		format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'av-ratio-up':avr-up, 'av-ratio-low':avr-low, 'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd}
                 output = output.replace('(', '%(')
                 output = output.replace(')', ')s')
                 print output % format
@@ -206,7 +208,10 @@ else:
 		format = {'ds-av':av, 'ds-gm':gm, 'ds-c':c, 'ds-std':sd, 'ds-var':v}
 		output = output.replace('(', '%(')
 		output = output.replace(')', ')s')
-		print output % format
+		try:
+			print output % format
+		except IOError:
+			print "WARNING: one or more tokens have been misspelled" 
 	
 
 
