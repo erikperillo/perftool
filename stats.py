@@ -96,10 +96,19 @@ def conf(cl, stdev, df):
 #	print 'col ', col, 'lin ', lin, 'tstar ', tstar
 	return tstar*(float(stdev)/float(math.sqrt(df+1)))
 
-def ratio(val1 , val2):
-	if val == 0:
-		return 0
-	return float(val1)/float(val2)
+def ratio(val1, val2, conf1=0, conf2=0, mode='m'):
+	if mode == 'm':
+		base = val1
+		nbase = val2
+	elif mode == 'u':
+		base = val1 + conf1
+		nbase = val2 - conf2
+	elif mode == 'l':	
+		base = val1 - conf1
+		nbase = val2 + conf2
+	if not(nbase) and base:
+		return 'undetermined'
+	return float(base)/float(nbase)
 
 def diff(val1, val2):
 	return val1-val2
