@@ -170,7 +170,10 @@ if not dataset:
 		format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'av-ratio-up':avr-up, 'av-ratio-low':avr-low, 'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd}
                 output = output.replace('(', '%(')
                 output = output.replace(')', ')s')
-                print output % format
+		try:
+                	print output % format
+		except KeyError:
+			print "WARNING: one or more tokens mispelled"
 
 else:
         if dataset1 or dataset2:
@@ -204,12 +207,12 @@ else:
 		print "\nvariance: ", v
 		print "standard deviation: ", sd
 	else:
-		format = {'ds-av':av, 'ds-gm':gm, 'ds-c':c, 'ds-std':sd, 'ds-var':v}
+		format = {'ds-av':av, 'ds-gm':gm, 'ds-ci':c, 'ds-std':sd, 'ds-var':v}
 		output = output.replace('(', '%(')
 		output = output.replace(')', ')s')
 		try:
 			print output % format
-		except IOError:
+		except KeyError:
 			print "WARNING: one or more tokens have been misspelled" 
 	
 
