@@ -84,7 +84,6 @@ for p,v in opts:
                 dataset = v
         elif p == '--cf':
                 field = v
-		print "atribuiu"
         elif p == '--cl':
                 confidence = v
         elif p == '--of1':
@@ -95,7 +94,6 @@ for p,v in opts:
 		output = v
 	elif h == '-h':
 		usage();
-print field
 if not field:
         print "Field to be analyzed missing."
 	usage();
