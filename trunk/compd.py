@@ -84,6 +84,7 @@ for p,v in opts:
                 dataset = v
         elif p == '--cf':
                 field = v
+		print "atribuiu"
         elif p == '--cl':
                 confidence = v
         elif p == '--of1':
@@ -126,8 +127,8 @@ if not dataset:
 	av1, gm1, v1, sd1, c1 = calc(list1, confidence)
 	av2, gm2, v2, sd2, c2 = calc(list2, confidence)
 	avr = stats.ratio(av1, av2)
-	avr-up = stats.ratio(av1, av2, c1, c2, 'u')
-	avr-low = stats.ratio(av1, av2, c1, c2, 'l')
+	#avr-up = stats.ratio(av1, av2, c1, c2, 'u')
+	#avr-low = stats.ratio(av1, av2, c1, c2, 'l')
 	gmr = stats.ratio(gm1, gm2)
 	avd = stats.diff(av1, av2)
 	gmd = stats.diff(gm1, gm2)
