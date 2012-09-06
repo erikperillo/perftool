@@ -106,7 +106,7 @@ def ratio(val1, val2, conf1=0, conf2=0, mode='m'):
 	elif mode == 'l':	
 		base = val1 - conf1
 		nbase = val2 + conf2
-	if not(nbase) and base:
+	if nbase==0:
 		return 'undetermined'
 	return float(base)/float(nbase)
 
