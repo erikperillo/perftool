@@ -50,7 +50,7 @@ def var(sum1, sum2, size):
 	try:
 		v = (sum2-(pow(sum1,2)/float(size)))/float(size-1)
 	except ZeroDivisionError:
-		print "WARNING: something went wrong while calculating standard deviation"
+		sys.stderr.write("WARNING: something went wrong while calculating standard deviation\n")
 		return 'error' 
 	if v < 0:
 		print "WARNING: something went wrong while calculating standard deviation"
