@@ -5,11 +5,11 @@ import stats
 import getopt
 
 def usage():
-	print "Help on script compd"
+	print "Help on compd tool"
 	print "NAME"
 	print "\tcompd"
 	print "DESCRIPTION"
-	print "\tThe compd script analyzes a determined feature of an application"
+	print "\tThe compd is a tool which analyzes a determined feature of an application"
 	print "ARGUMENTS"
 	print "\t--ds1 file1name --ds2 file2name: The rdt files to be compared. The complete path is needed if the files are not in the same directory as the script"
 	print "\t--ds filename: The rdt file to be analyzed. The complete path is needed if the file are not in the same directory as the script"
@@ -21,6 +21,12 @@ def usage():
 	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio),(av-ratio-low), (av-ratio-up), (av-diff), (gm-diff),  for a pair of data sets"
 	print "\t\tor (ds-av), (ds-gm), (ds-ci), (ds-std), (ds-var) for a single data set."
 
+def error(message, status):
+	sys.stderr.write(message+'\n')
+	if status:
+		sys.exit(status)
+	return
+		
 def search(file, field):
 
 	temp = file.readline().strip()
@@ -67,7 +73,10 @@ def calc(x, conf):
 	return av, gm, v, sd, c
 
 
-flags = ['ds1=', 'ds2=', 'ds=', 'cf=', 'cl=', 'of1', 'of2', 'of=']
+
+# Main
+
+flags = ['ds1=', 'ds2=', 'ds=', 'cf=', 'cl=', 'of1', 'of2', 'of=', 'help']
 
 opts, args = getopt.getopt(sys.argv[1:], 'h', flags)
 
@@ -92,8 +101,9 @@ for p,v in opts:
 		output = 2
 	elif p == '--of':
 		output = v
-	elif h == '-h':
+	elif p == '-h' or p == "--help":
 		usage();
+
 if not field:
         print "Field to be analyzed missing."
 	usage();
@@ -172,9 +182,9 @@ if not dataset:
                 output = output.replace(')', ')s')
 		try:
                 	print output % format
-		except KeyError:
-			print "WARNING: one or more tokens mispelled"
-
+		except KeyError as e:
+			print "WARNING: %s is not a valid token." % e
+			usage();
 else:
         if dataset1 or dataset2:
                 print "Use either --ds or --ds1 and --ds2."
@@ -212,8 +222,9 @@ else:
 		output = output.replace(')', ')s')
 		try:
 			print output % format
-		except KeyError:
-			print "WARNING: one or more tokens have been misspelled" 
+		except KeyError as e:
+			print "WARNING: %s is not a valid token." % e
+			usage(); 
 	
 
 
