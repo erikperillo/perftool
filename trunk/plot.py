@@ -3,15 +3,27 @@
 import sys
 import os.path
 import subprocess
-
+import matplotlib as plt
 
 def get_rev():
 	cmd = "svn info https://neopz.googlecode.com/svn/trunk/ | grep Revision | cut -d ' ' -f2" 
 	P = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=False)
 	return int(P.stdout.readline())
 
-def plot():
-
+def plot(x, y, e, dout):
+	# plotting graph1
+	n = (len(x)) / 5
+	if (len(x)) % 5:
+		n+=1
+	i=0
+	index=0
+	while i < n:
+		while index < bla:
+			#plt.errorbar(x[index], [0,2,4,8], e[index])
+			index+=1
+		#plt.savefig(dout + filename + ".png")
+		i+=1
+	
 
 # Main
 
@@ -47,7 +59,8 @@ for p in ['1', '2']:
 
 					for ntsm in ['0', '2', '4', '8']:
 
-						filename = dir_name + "/cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm." + ntsm + ".ass.rdt"
+						filename = "/cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm." + ntsm + ".ass"
+						path = dir_name + filename + ".rdt"
 			 			if os.path.exists(filename):
 							cmd = "/local/julia/perftool/compd.py --ds " + filename + " --cf ELAPSED --cl " + str(conf) + " --of '(ds-av) (ds-ci)'"
 							print cmd 	
@@ -72,7 +85,7 @@ for p in ['1', '2']:
 
 				nrev = nrev+1
 
-			plot()
+			plot(time, r, error, dir_ouput, filename)
 			#sys.exit(1)
 			nrev = nrev_min
 
