@@ -47,7 +47,10 @@ def var(sum1, sum2, size):
 #	print "sum:", sum1
 #	print "sqsum:",sum2
 #	print "len:",size
-	try:
+	if size == 1:
+		sys.stderr.write("WARNING: cannot calculate variance for a sample of size 1\n")
+		return 0
+ 	try:
 		v = (sum2-(pow(sum1,2)/float(size)))/float(size-1)
 	except ZeroDivisionError:
 		sys.stderr.write("WARNING: something went wrong while calculating standard deviation\n")

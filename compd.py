@@ -5,12 +5,12 @@ import stats
 import getopt
 
 def usage():
-	print "Help on compd tool"
+	print "\nHelp on compd tool\n"
 	print "NAME"
 	print "\tcompd"
-	print "DESCRIPTION"
+	print "\nDESCRIPTION"
 	print "\tThe compd is a tool which analyzes a determined feature of an application"
-	print "ARGUMENTS"
+	print "\nARGUMENTS"
 	print "\t--ds1 file1name --ds2 file2name: The rdt files to be compared. The complete path is needed if the files are not in the same directory as the script"
 	print "\t--ds filename: The rdt file to be analyzed. The complete path is needed if the file are not in the same directory as the script"
 	print "\t--cf column: The feature to be anlyzed or/and compared. It corresponds to one of the columns of the rdt file(s). You must enter this argument."
@@ -19,7 +19,7 @@ def usage():
 	print "\t--of2: Seconday output format. there will be a new line for each statistical result and comparison result if there are two data sets."
 	print "\t--of string: User-defined output format. This format can be definded by a string containing one or more of the following tokens:" 
 	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio),(av-ratio-low), (av-ratio-up), (av-diff), (gm-diff),  for a pair of data sets"
-	print "\t\tor (ds-av), (ds-gm), (ds-ci), (ds-std), (ds-var) for a single data set."
+	print "\t\tor (ds-av), (ds-gm), (ds-ci), (ds-std), (ds-var) for a single data set.\n"
 
 def error(message, status):
 	sys.stderr.write(message+'\n')
@@ -103,6 +103,7 @@ for p,v in opts:
 		output = v
 	elif p == '-h' or p == "--help":
 		usage();
+		sys.exit(0)
 
 if not field:
         print "Field to be analyzed missing."
@@ -183,7 +184,7 @@ if not dataset:
 		try:
                 	print output % format
 		except KeyError as e:
-			print "WARNING: %s is not a valid token." % e
+			print "WARNING: (%s) is not a valid token." % e
 			usage();
 else:
         if dataset1 or dataset2:
@@ -223,7 +224,7 @@ else:
 		try:
 			print output % format
 		except KeyError as e:
-			print "WARNING: %s is not a valid token." % e
+			print "WARNING: (%s) is not a valid token." % e
 			usage(); 
 	
 
