@@ -10,18 +10,34 @@ def get_rev():
 	P = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=False)
 	return int(P.stdout.readline())
 
-def plot(x, y, e, dout):
+def plot(x, y, e, dout, file):
 	# plotting graph1
 	n = (len(x)) / 5
-	if (len(x)) % 5:
-		n+=1
+	r = (len(x)) % 5
+
 	i=0
 	index=0
+	if n >= 1:
+		index_max = 5
+	else:
+		index_max = r
+		1=-1
+
 	while i < n:
-		while index < bla:
-			#plt.errorbar(x[index], [0,2,4,8], e[index])
+		while index < index_max:
+			if index > len(x):
+				break
+			plt.errorbar([0,2,4,8], y[index], e[index])
+			plt.figtext(0.5, 0.5, str(x[index]))
 			index+=1
-		#plt.savefig(dout + filename + ".png")
+
+		plt.grid('on')
+		plt.suptitle(file, fontsize=15)
+		plt.xlabel('ntsm', fontsize=12)		
+		plt.ylabel('t(s)', fontsize=12)		
+		#plt.savefig(dout + file + ".png")
+		plt.show()
+		index_max=+5
 		i+=1
 	
 
@@ -84,8 +100,9 @@ for p in ['1', '2']:
 					print "pos: ", pos
 
 				nrev = nrev+1
-
-			plot(time, r, error, dir_ouput, filename)
+			
+			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass"
+			plot(r, time, error, dir_ouput, filename)
 			#sys.exit(1)
 			nrev = nrev_min
 
