@@ -3,7 +3,7 @@
 import sys
 import os.path
 import subprocess
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 def get_rev():
 	cmd = "svn info https://neopz.googlecode.com/svn/trunk/ | grep Revision | cut -d ' ' -f2" 
@@ -21,7 +21,7 @@ def plot(x, y, e, dout, file):
 		index_max = 5
 	else:
 		index_max = r
-		1=-1
+		i=-1
 
 	while i < n:
 		while index < index_max:
@@ -77,17 +77,18 @@ for p in ['1', '2']:
 
 						filename = "/cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm." + ntsm + ".ass"
 						path = dir_name + filename + ".rdt"
-			 			if os.path.exists(filename):
-							cmd = "/local/julia/perftool/compd.py --ds " + filename + " --cf ELAPSED --cl " + str(conf) + " --of '(ds-av) (ds-ci)'"
+			 			if os.path.exists(path):
+							cmd = "/local/julia/perftool/compd.py --ds " + path + " --cf ELAPSED --cl " + str(conf) + " --of '(ds-av) (ds-ci)'"
 							print cmd 	
 							process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=False)
 							data = process.stdout.readline().strip().split(" ")	
+							print data
 							av.append(float(data[0]))
 							ci.append(float(data[1]))
 							r.append(nrev)
 						else: 	
-							sys.stderr.write("WARNING: could not find " + filename + "\n") 		
-							v.append(0)
+							sys.stderr.write("WARNING: could not find " + path + "\n") 		
+							av.append(0)
                                                         ci.append(0)
                                                         r.append(nrev)
 	
@@ -95,14 +96,14 @@ for p in ['1', '2']:
 					time.insert(pos, av)
 					error.insert(pos, ci)
 					pos = pos+1
-					print "time: ", time
-					print "error: ", error
-					print "pos: ", pos
+					#print "time: ", time
+					#print "error: ", error
+					#print "pos: ", pos
 
 				nrev = nrev+1
 			
 			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass"
-			plot(r, time, error, dir_ouput, filename)
+			plot(r, time, error, dir_output, filename)
 			#sys.exit(1)
 			nrev = nrev_min
 
