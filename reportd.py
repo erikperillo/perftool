@@ -17,6 +17,14 @@ def make_exec():
         P = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=False)
         return 
 
+#def reassemble_data(v):
+#
+#	i=0
+#	cfg=[]
+
+#	while i < len(v):
+#		aux=[]
+		
 
 # Main
 
@@ -33,7 +41,7 @@ CPG=5 #number of curves per graph
 
 make_exec()
 
-print "rev_max", nrev_max
+#print "rev_max", nrev_max
 
 for p in '1', '2':
 
@@ -61,14 +69,14 @@ for p in '1', '2':
 						path = dir_name + filename + ".rdt"
 			 			if os.path.exists(path):
 							cmd = "/local/julia/perftool/compd.py --ds " + path + " --cf ELAPSED --cl " + str(conf) + " --of '(ds-av) (ds-ci)'"
-							print cmd 	
+							#print cmd 	
 							process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=False)
 							data = process.stdout.readline().strip().split(" ")	
 							#print data
 							av.append(float(data[0]))
 							ci.append(float(data[1]))
-							print "nrev: ", nrev
-							print r
+							#print "nrev: ", nrev
+							#print r
 						else: 	
 							sys.stderr.write("WARNING: could not find " + path + "\n") 		
 							av.append(0)
@@ -85,11 +93,12 @@ for p in '1', '2':
 
 				nrev = nrev+1
 			
-			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass"
-			plot.time_vs_config_plot(r, time, error, CPG, dir_output, filename)
-			#sys.exit(1)
-			print "no de revisoes: ", len(r)
-			print r
+			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass."
+			plot.time_vs_config_plot(r, time, error, CPG, 'r', dir_output, filename)
+			#reassemble_data(time)
+			#plot.time_vs_config_plot(r, time, error, CPG, 'cfg', dir_output, filename)
+			#print "no de revisoes: ", len(r)
+			#print r
 			nrev = nrev_min
 
 
