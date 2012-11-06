@@ -17,14 +17,22 @@ def make_exec():
         P = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=False)
         return 
 
-#def reassemble_data(v):
-#
-#	i=0
-#	cfg=[]
+def reassemble_data(v):
 
-#	while i < len(v):
-#		aux=[]
-		
+	j=0
+	cfg=[]
+
+	while j < len(v[0]):
+		i=0
+		aux=[]
+		while i < len(v):
+			aux.append(v[i][j])		
+			i=i+1
+		cfg.insert(j, aux)
+		j=j+1
+
+	return cfg
+
 
 # Main
 
@@ -93,10 +101,12 @@ for p in '1', '2':
 
 				nrev = nrev+1
 			
-			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass."
-			plot.time_vs_config_plot(r, time, error, CPG, 'r', dir_output, filename)
-			#reassemble_data(time)
-			#plot.time_vs_config_plot(r, time, error, CPG, 'cfg', dir_output, filename)
+			#filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass."
+			#plot.time_vs_config_plot([0,2,4,8], time, error, rev, l1='r', l2='ntsm', dout=dir_output, file=filename)
+			#print "time: ", time
+			#print ' '
+			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + "ass."
+			plot.time_vs_config_plot(r, reassemble_data(time), reassemble_data(error), leg=[0,2,4,8], cpg=4, l1='ntsm=', l2='revision', dout=dir_output, file=filename)
 			#print "no de revisoes: ", len(r)
 			#print r
 			nrev = nrev_min
