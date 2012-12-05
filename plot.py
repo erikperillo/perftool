@@ -1,47 +1,59 @@
 #! /usr/bin/env python
 
+import numpy as np
 import matplotlib.pyplot as plt
 
-# one-curve-per-revision-plot
-def time_vs_config_plot(x, y, e, leg, cpg, l1, l2, dout, file):
+# This function plots a bar graph and save it to a file.
+# ARGUMENTS
+# y: list containing the height of the bars
+# yerror: list containing error value for y 
+# file: file name for the graph file
+# title: graph title 
+# xticks: label for the x ticks
+# ylabel: label for the y axis  
+def bars(y, yerror, file, title, xticks, ylabel):
 
+	N = len(y)
+	x = np.arange(N)	# the x locations for the bars
+	width = 0.25		# width of the bars
 
-	n = len(x)
-	print "n: ", n
-
-	index=0
-	index_max=cpg
-
-	while index < n:
-		i=-1
-		while index < index_max:
-			if index >= n:
-				break
-			print "index: ", index
-			print "time: ", len(y[index])
-			print "error: ",  len(e[index])
-			if l1 == 'r':
-				i = index
-			else:
-				i = i + 1
-				print "funfou!"
-			print 'i: ', i
-			print "leg: ", leg[i]
-			plt.errorbar(x, y[index], e[index], label=l1+str(leg[i]))
-			index+=1
-			
-		#print "index max: ", index_max
-		plt.grid('on')
-		plt.margins(0.2, 0.2)
-		plt.suptitle(file, fontsize=15)
-		plt.xlabel(l2, fontsize=12)		
-		plt.ylabel('t(s)', fontsize=12)		
-		plt.legend(loc=8, ncol=cpg, mode="expand")
-		#plt.savefig(dout + file + str(i) + ".png")
-		#plt.close()
-		print "plot!"
-		plt.show()
-		index_max = index_max + cpg
-
+	plt.bar(x, y, width, yerr=yerror, ecolor='r')	# plotting bar graph
 	
+	plt.ylabel(ylabel)		# add label to the y axis
+	plt.xticks(x+width/2., xticks)	# add labels to the x ticks
+	plt.margins(0.2,0)		# add horizontal margin	
+	if title:			# if a title was parsed
+		plt.title(title)	# add title to graph
+
+	#plt.yticks(0,int(max(y+yerror))+1,10)	# set values to the y ticks
+	
+	#plt.savefig(file)		# save graph to file
+	plt.show()
+		
 	return
+
+# This function plots a line graph and save it to a file.
+# ARGUMENTS
+# y: list containing y coordinates for each point of the line
+# yerror: list containing error values for y 
+# file: file name for the graph file
+# title: graph title 
+# xticks: label for the x ticks
+# ylabel: label for the y axis 
+def lines(y, yerror, file, title, xticks, ylabel):
+
+	N = len(y)
+	x = np.arange(N)	# the x locations of the points
+	margin = 0.2
+
+	plt.errorbar(x, y, yerr=yerror, ecolor='r')	# plotting line graph
+
+	plt.ylabel(ylabel)		# add label to the y axis
+	plt.xticks(x, xticks)		# add labels to the x ticks
+	plt.margins(margin,margin)		# add horizontal margin	
+	if title:			# if a title was parsed
+		plt.title(title)	# add title to graph
+
+	#plt.savefig(file)		# save graph to file
+	plt.show()
+
