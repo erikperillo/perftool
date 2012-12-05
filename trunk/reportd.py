@@ -101,12 +101,14 @@ for p in '1', '2':
 
 				nrev = nrev+1
 			
-			#filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass."
-			#plot.time_vs_config_plot([0,2,4,8], time, error, rev, l1='r', l2='ntsm', dout=dir_output, file=filename)
+			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".nt_sm.ass."
+			plot.x_vs_time_plot([0,2,4,8], time, error, r, cpg=5, l1='r', l2='ntsm', dout=dir_output, file=filename)
+			#sys.exit(1)
 			#print "time: ", time
 			#print ' '
-			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + "ass."
-			plot.time_vs_config_plot(r, reassemble_data(time), reassemble_data(error), leg=[0,2,4,8], cpg=4, l1='ntsm=', l2='revision', dout=dir_output, file=filename)
+			filename = "cubo1.double.txt.ckpt1.p" + p + ".nsub" + nsub + ".nt_a." + nt_ + ".nt_d." + nt_ + ".nt_m." + nt_ + ".ass"
+			plot.x_vs_time_plot(r, reassemble_data(time), reassemble_data(error), leg=[0,2,4,8], cpg=4, l1='ntsm=', l2='revision', dout=dir_output, file=filename)
+			#sys.exit(1)
 			#print "no de revisoes: ", len(r)
 			#print r
 			nrev = nrev_min
