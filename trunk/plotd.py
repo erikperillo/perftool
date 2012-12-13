@@ -59,12 +59,12 @@ def generate_data(files, df, c):
 	av=[]
 	error=[]
 	if c:
-		print "cmd: ", cmd	
+		#print "cmd: ", cmd	
 		for f in files:
 			cmd = "/local/julia/perftool/compd.py --cf " + df + " --cl " + c + " --of '(ds-av) (ds-ci)' --ds " + f
 			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 			values = p.stdout.readline().strip().split(' ')
-			print values
+			#print values
 			av.append(float(values[0]))
 			error.append(float(values[1]))	
 	else:
@@ -74,7 +74,7 @@ def generate_data(files, df, c):
 			#print "cmd: ", cmd	
 			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 			value = p.stdout.readline().strip()
-			print value
+			#print value
 			av.append(float(value))
 	
 	return av, error
@@ -154,6 +154,8 @@ if not title:
 if not xlabel:
 	warning("no label for x values. File names will be used.")
 	xlabel=input
+else:
+	xlabel=xlabel.split(' ')
 
 if not ylabel:
 	warning("no label for the y axis. Data field will be used.")	
