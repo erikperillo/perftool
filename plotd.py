@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import re
 import sys
 import plot
 import getopt
@@ -40,7 +41,7 @@ def fail(message, status=0):
 def warning(message):
 	sys.stderr.write("WARNING: " + message + '\n')
 
-def list_input(filename):
+def list(filename):
 	list=[]
 	cmd = "ls -1 " + filename
 	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
@@ -86,11 +87,13 @@ def generate_data(files, df, c):
 
 	
 short_flags='o:b:l:h'
-long_flags=['df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'bar', 'lines']
+long_flags=['df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'bar', 'lines', 'help']
+extra_flags=['b1=', 'b2=', 'b3=', 'b4=', 'b5=', 'b6=', 'b7=', 'b8=', 'b9=', 'b10=', 'l1=', 'l2=', 'l3=', 'l4=', 'l5=', 'l6=', 'l7=', 'l8=', 'l9=', 'l10=']
 
-opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
+opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags+extra_flags)
 	
-output=input=field=conf=title=xlabel=ylabel=plot_type=0
+output=field=conf=title=xlabel=ylabel=plot_type=0
+input=[]
 	
 for f,v in opts:
 
@@ -98,8 +101,8 @@ for f,v in opts:
 		output = v
 
 	elif f == '-b' or f == '-l':
-		input = v
-	
+		input = list(v)
+
 	elif f == '-h':
 		usage()
 		sys.exit()
@@ -125,8 +128,18 @@ for f,v in opts:
 	elif f == '--lines':	
 		plot_type = 'l'
 
-	else:
-		fail("Invalid flag.", 2)
+	elif re.match(r'--b\d', f) != None:
+		input.append(v)
+
+	elif re.match(r'--l\d', f) != None:
+		if re.search(r'\*', v) == None:
+			input.append(v)
+ 		else:
+			temp = list(v)
+			input.append(temp)
+
+print input
+sys.exit()		
 
 	
 if not plot_type:
@@ -138,10 +151,9 @@ if not field:
 if not output:
 	fail("A name is required for the output file.", 1)
 
-if not input:
+if not len(input):
 	fail("Input files must be entered.", 1)
 	
-input = list_input(input)
 ylist,error = generate_data(input, field, conf)
 
 if not conf:
