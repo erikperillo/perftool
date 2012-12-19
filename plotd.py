@@ -6,7 +6,7 @@ import plot
 import getopt
 import subprocess
 
-# print the module info
+# prints the module info
 def usage():
 	sys.stderr.write("\nHelp on plotd tool\nNAME\n\tplotd\nDESCRIPTION\n\tPlotd generates bar or line graphs from given rdt files\n")
 	sys.stderr.write("ARGUMENTS\n")
@@ -18,16 +18,16 @@ def usage():
 	sys.stderr.write("\t--ylabel: Label for the y axis. If not entered data field will be used.\n")
 	sys.stderr.write("BAR PLOT\n")
 	sys.stderr.write("\t--bar: selects bar plot\n")
-	sys.stderr.write("\t--b{n} filename: The rdt file containing data for the nth bar of the graph.\n")
-	sys.stderr.write("\t-b filenames: rdt file range. One bar will be plotted for each file.\n")
+	sys.stderr.write("\t-b n filename: The rdt file containing data for the nth bar of the graph.\n")
+	sys.stderr.write("\t-B filenames: rdt file range. One bar will be plotted for each file.\n")
 	sys.stderr.write("LINE PLOT\n")
 	sys.stderr.write("\t--lines: selects line plot\n")
-	sys.stderr.write("\t--l{n} filename: The rdt file containing data for the nth line of the graph\n")
-	sys.stderr.write("\t--l{n}.{m} filename: The rdt file containig data for the mth point of the nth line of graph.\n")
-	sys.stderr.write("\t-l filenames: rdt files range. One line will be plotted fo each file\n")
+	sys.stderr.write("\t-l n filename: The rdt file range containing data for the nth line of the graph\n")
+	sys.stderr.write("\t--lp n m filename: The rdt file containig data for the mth point of the nth line of graph.\n")
+	sys.stderr.write("\t-L filenames: rdt files range. A single line will be plotted.\n")
 
-# print an error message and the module info
-# exit if required
+# prints an error message and the module info
+# exits if required
 # mesage: string
 # status: int
 def fail(message, status=0):
@@ -36,18 +36,24 @@ def fail(message, status=0):
         if status:
                 sys.exit(status)
 
-# print a warning message
+# prints a warning message
 # message: string
 def warning(message):
 	sys.stderr.write("WARNING: " + message + '\n')
 
-def list(filename):
+# cuts the filename off the complete path
+# get_fname: string
+def get_fname(path):
+	fname = path.split('/')
+	pos= len(fname) - 1
+	return fname[pos]
+
+# executes the ls command and returns a list of strings
+# filename: string
+def list_files(filename):
 	list=[]
 	cmd = "ls -1 " + filename
 	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-	#a=p.stdout.readlines()
-	#print a
-	#sys.exit()
 	while True:
 		file = p.stdout.readline().strip()
 		if len(file):
@@ -56,26 +62,27 @@ def list(filename):
 			break	# reached end of file						
 	return list
 
+# executes the compd tool and returns a list containing averages and another containing errors, if c is given
+# files: list of strings
+# df: string
+# c: string
 def generate_data(files, df, c):
+
 	av=[]
 	error=[]
+
 	if c:
-		#print "cmd: ", cmd	
 		for f in files:
 			cmd = "/local/julia/perftool/compd.py --cf " + df + " --cl " + c + " --of '(ds-av) (ds-ci)' --ds " + f
 			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 			values = p.stdout.readline().strip().split(' ')
-			#print values
 			av.append(float(values[0]))
 			error.append(float(values[1]))	
 	else:
 		for f in files:
 			cmd = "/local/julia/perftool/compd.py --cf " + df + " --of '(ds-av)' --ds " + f
-			
-			#print "cmd: ", cmd	
 			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 			value = p.stdout.readline().strip()
-			#print value
 			av.append(float(value))
 	
 	return av, error
@@ -85,13 +92,22 @@ def generate_data(files, df, c):
 # Main
 # ============
 
-	
-short_flags='o:b:l:h'
-long_flags=['df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'bar', 'lines', 'help']
-extra_flags=['b1=', 'b2=', 'b3=', 'b4=', 'b5=', 'b6=', 'b7=', 'b8=', 'b9=', 'b10=', 'l1=', 'l2=', 'l3=', 'l4=', 'l5=', 'l6=', 'l7=', 'l8=', 'l9=', 'l10=']
+#-B teste*.rdt
+#-b 1 teste1.rdt -b 2 meu_arquivo.rdt -b 3 terceira_barra.rdt
 
-opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags+extra_flags)
+#-L arquivos*.rdt   # Plota uma linha. Cada ponto e um arquivo diferente
+#-l 1 arquivos*.rdt -l 2 arquivos2*.rdt # Duas linhas. Os pontos de cada linha vem dos arquivos distintos.
+#-lp 1 1 arq.rdt -lp 1 2 arq2.rdt -lp 1 10 arq3.rdt -lp 2 1 a.rdt -lp 2 5 outro.rdt 
+
+#Mix and match:
+#-lp 1 1 arq.rdt -lp 1 7 arq7.rdt -l 2 linha2*.rdt
 	
+short_flags='B:b:L:l:o:h'
+long_flags=['lp=', 'df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'bar', 'lines', 'help']
+
+opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
+print opts
+#sys.exit()	
 output=field=conf=title=xlabel=ylabel=plot_type=0
 input=[]
 	
@@ -99,9 +115,6 @@ for f,v in opts:
 
 	if f == '-o':
 		output = v
-
-	elif f == '-b' or f == '-l':
-		input = list(v)
 
 	elif f == '-h':
 		usage()
@@ -128,18 +141,20 @@ for f,v in opts:
 	elif f == '--lines':	
 		plot_type = 'l'
 
-	elif re.match(r'--b\d', f) != None:
-		input.append(v)
+	elif f == '-B' or f == '-L':
+		input = list_files(get_fname(v))
 
-	elif re.match(r'--l\d', f) != None:
-		if re.search(r'\*', v) == None:
-			input.append(v)
- 		else:
-			temp = list(v)
-			input.append(temp)
+	#elif f == 'b':
+		#some code here 
 
-print input
-sys.exit()		
+	#elif f == 'l':
+		#some code here
+
+	#elif f == 'lp':
+		#some code here
+
+#print input
+#sys.exit()		
 
 	
 if not plot_type:
