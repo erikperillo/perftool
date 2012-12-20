@@ -42,11 +42,14 @@ def warning(message):
 	sys.stderr.write("WARNING: " + message + '\n')
 
 # cuts the filename off the complete path
-# get_fname: string
-def get_fname(path):
-	fname = path.split('/')
-	pos= len(fname) - 1
-	return fname[pos]
+# paths: list of strings
+def get_fname(paths):
+	flist=[]	
+	for path in paths:	
+		fname = path.split('/')
+		pos = len(fname) - 1
+		flist.append(fname[pos])
+	return flist
 
 # executes the ls command and returns a list of strings
 # filename: string
@@ -106,7 +109,7 @@ short_flags='B:b:L:l:o:h'
 long_flags=['lp=', 'df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'bar', 'lines', 'help']
 
 opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
-print opts
+#print opts
 #sys.exit()	
 output=field=conf=title=xlabel=ylabel=plot_type=0
 input=[]
@@ -142,7 +145,7 @@ for f,v in opts:
 		plot_type = 'l'
 
 	elif f == '-B' or f == '-L':
-		input = list_files(get_fname(v))
+		input = list_files(v)
 
 	#elif f == 'b':
 		#some code here 
@@ -180,7 +183,7 @@ if not title:
 
 if not xlabel:
 	warning("no label for x values. File names will be used.")
-	xlabel=input
+	xlabel=get_fname(input)
 else:
 	xlabel=xlabel.split(' ')
 
