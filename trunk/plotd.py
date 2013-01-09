@@ -105,8 +105,8 @@ def generate_data(files, df, c):
 #Mix and match:
 #-lp 1 1 arq.rdt -lp 1 7 arq7.rdt -l 2 linha2*.rdt
 	
-short_flags='B:b:L:l:o:h'
-long_flags=['lp=', 'df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'bar', 'lines', 'help']
+short_flags='B:b:L:l:o:p:h'
+long_flags=['df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'help']
 
 opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
 #print opts
@@ -138,22 +138,39 @@ for f,v in opts:
 	elif f == '--ylabel':
 		ylabel = v
 
-	elif f == '--bar':
-		plot_type = 'b'
-	
-	elif f == '--lines':	
-		plot_type = 'l'
-
-	elif f == '-B' or f == '-L':
+	elif f == '-B':
+		if plot_type == 'l':
+			fail("Cannot mix plot types.", 1)
+		else:
+			plot_type='b'
 		input = list_files(v)
 
-	#elif f == 'b':
+	elif f == '-L':
+		if plot_type == 'b':
+			fail("Cannot mix plot types.", 1)
+		else:
+			plot_type='l'
+		input = list_files(v)
+
+	elif f == '-b':
+		if plot_type == 'l':
+			fail("Cannot mix plot types.", 1)
+		else:
+			plot_type='b'
 		#some code here 
 
-	#elif f == 'l':
+	elif f == '-l':
+		if plot_type == 'b':
+			fail("Cannot mix plot types.", 1)
+		else:
+			plot_type='l'
 		#some code here
 
-	#elif f == 'lp':
+	elif f == '-p':
+		if plot_type == 'b':
+			fail("Cannot mix plot types.", 1)
+		else:
+			plot_type='l'
 		#some code here
 
 #print input
