@@ -62,7 +62,7 @@ def bars(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 # title: graph title 
 # xticks: label for the x ticks
 # ylabel: label for the y axis 
-def lines(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
+def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 
 	N = len(y)
 	x = np.arange(N)	# the x locations of the points
@@ -84,3 +84,5 @@ def lines(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 		plt.show()		# display graph 
 
 	return
+
+#def lines():
