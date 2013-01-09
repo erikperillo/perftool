@@ -177,9 +177,6 @@ for f,v in opts:
 #sys.exit()		
 
 	
-if not plot_type:
-	fail("A plot type must be chosen.", 1)
-
 if not field:
 	fail("A data field must be entered.", 1)
 
@@ -211,5 +208,5 @@ if not ylabel:
 if plot_type == 'b':
 	plot.bars(ylist, error, output, title, xlabel, ylabel)
 else:
-	plot.lines(ylist, error, output, title, xlabel, ylabel)
+	plot.line(ylist, error, output, title, xlabel, ylabel)
 
