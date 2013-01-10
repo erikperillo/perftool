@@ -23,7 +23,7 @@ def usage():
 	sys.stderr.write("LINE PLOT\n")
 	sys.stderr.write("\t--lines: selects line plot\n")
 	sys.stderr.write("\t-l n filename: The rdt file range containing data for the nth line of the graph\n")
-	sys.stderr.write("\t--lp n m filename: The rdt file containig data for the mth point of the nth line of graph.\n")
+	sys.stderr.write("\t-p n m filename: The rdt file containig data for the mth point of the nth line of graph.\n")
 	sys.stderr.write("\t-L filenames: rdt files range. A single line will be plotted.\n")
 
 # prints an error message and the module info
@@ -89,7 +89,27 @@ def generate_data(files, df, c):
 			av.append(float(value))
 	
 	return av, error
-	
+
+#description
+# dict: dictionary containing the input files
+def dict_to_list(dict):
+	d={}
+	l=[]
+	temp=-1
+	for key in dict:
+		if type(key) is int:
+			d[key]=dict[key]
+		else:
+			if temp == key[0]:
+				l.append(dict[key])
+			else:
+				#not finished yet
+				d[temp]=l
+				temp=key[0]
+			
+	list = d.values()		
+	return list	
+
 
 # ============
 # Main
@@ -113,6 +133,7 @@ opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
 #sys.exit()	
 output=field=conf=title=xlabel=ylabel=plot_type=0
 input=[]
+input2={}
 	
 for f,v in opts:
 
@@ -139,54 +160,56 @@ for f,v in opts:
 		ylabel = v
 
 	elif f == '-B':
-		if plot_type == 'l':
+		if plot_type != 'b':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='b'
 		input = list_files(v)
 
 	elif f == '-L':
-		if plot_type == 'b':
+		if plot_type != 'l':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='l'
 		input = list_files(v)
 
 	elif f == '-b':
-		if plot_type == 'l':
+		if plot_type != 'b':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='b'
-		#some code here 
+		temp=v.split(' ')
+		input2[int(temp[0])]=temp[1]
 
 	elif f == '-l':
-		if plot_type == 'b':
+		if plot_type != 'L':
 			fail("Cannot mix plot types.", 1)
 		else:
-			plot_type='l'
-		#some code here
+			plot_type='L'
+		temp=v.split(' ')
+		input2[int(temp[0])]=list_files(temp[1])
 
 	elif f == '-p':
-		if plot_type == 'b':
+		if plot_type != 'L':
 			fail("Cannot mix plot types.", 1)
 		else:
-			plot_type='l'
-		#some code here
+			plot_type='L'
+		temp=v.split(' ')
+		input2[(int(temp[0]),int(temp[1]))]=temp[2]
 
-#print input
+
+#print input2
 #sys.exit()		
 
 	
+if not plot_type:
+	fail("Input file(s) must be entered.", 1)
+
 if not field:
 	fail("A data field must be entered.", 1)
 
 if not output:
 	fail("A name is required for the output file.", 1)
-
-if not len(input):
-	fail("Input files must be entered.", 1)
-	
-ylist,error = generate_data(input, field, conf)
 
 if not conf:
 	warning("no value entered for the confidence level. Erros bars will not be displayed.")
@@ -206,7 +229,16 @@ if not ylabel:
 	ylabel = field
 	
 if plot_type == 'b':
+	if len(input2):
+		input=input2.values()
+	ylist,error = generate_data(input, field, conf)
 	plot.bars(ylist, error, output, title, xlabel, ylabel)
-else:
+
+elif plot_type == 'l':
+	ylist,error = generate_data(input, field, conf)
 	plot.line(ylist, error, output, title, xlabel, ylabel)
 
+else:
+	input=dict_to_list(input2)
+	ylist,error = generate_data(input, field, conf)
+	#plot.lines(ylist, error, output, title, xlabel, ylabel)
