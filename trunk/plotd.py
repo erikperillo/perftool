@@ -103,8 +103,9 @@ def dict_to_list(dict):
 			if temp == key[0]:
 				l.append(dict[key])
 			else:
-				#not finished yet
-				d[temp]=l
+				if len(l):
+					d[temp]=l
+					del l[:]
 				temp=key[0]
 			
 	list = d.values()		
@@ -241,4 +242,4 @@ elif plot_type == 'l':
 else:
 	input=dict_to_list(input2)
 	ylist,error = generate_data(input, field, conf)
-	#plot.lines(ylist, error, output, title, xlabel, ylabel)
+	plot.lines(ylist, error, output, title, ylabel)

@@ -54,6 +54,7 @@ def bars(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 
 	return
 
+
 # This function plots a line graph and save it to a file.
 # ARGUMENTS
 # y: list containing y coordinates for each point of the line
@@ -85,4 +86,40 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 
 	return
 
-#def lines():
+
+# This function plots a multiple line graph and save it to a file.
+# ARGUMENTS
+# y: list of lists containing y coordinates for each point of each line
+# yerror: list of lists containing error values for y 
+# file: file name for the graph file
+# title: graph title 
+# ylabel: label for the y axis 
+
+def lines(y, yerror=None, file=0, title=0, ylabel=0, display=0):
+	margin = 0.2
+	
+	for list in y:
+		N = len(y)
+		x = np.arange(N)	# the x locations of the points
+
+		plt.errobar(x, y, ecolor='r')	# plotting line
+
+	plt.margins(margin, margin)	# add margins to graph
+	if ylabel:
+		plt.ylabel(ylabel)	# add label to the y axis
+	if xticks:
+		plt.xticks(x, xticks)	# add labels to the x ticks
+	if title:			
+		plt.title(title)	# add title to graph
+
+	if not(display) and file:
+		plt.savefig(file)	# save graph to file
+	else:
+		plt.show()		# display graph 
+
+	return
+
+
+
+
+
