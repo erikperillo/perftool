@@ -241,5 +241,6 @@ elif plot_type == 'l':
 
 else:
 	input=dict_to_list(input2)
-	ylist,error = generate_data(input, field, conf)
+#not finished yet	
+#ylist,error = generate_data(input, field, conf)
 	plot.lines(ylist, error, output, title, ylabel)
