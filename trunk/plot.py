@@ -75,12 +75,13 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 	if ylabel:
 		plt.ylabel(ylabel)	# add label to the y axis
 	if xticks:
-		plt.xticks(x, xticks)	# add labels to the x ticks
+		# add labels to the x ticks
+		plt.xticks(x, xticks, size=5, weight='black',  stretch='ultra-condensed', rotation=-20, ha='left')	
 	if title:			
 		plt.title(title)	# add title to graph
 
 	if not(display) and file:
-		plt.savefig(file)	# save graph to file
+		plt.savefig(file, bbox_inches='tight')	# save graph to file
 	else:
 		plt.show()		# display graph 
 
@@ -95,16 +96,25 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 # title: graph title 
 # ylabel: label for the y axis 
 
-def lines(y, yerror=None, file=0, title=0, ylabel=0, display=0):
+def lines(y, yerror=None, file=0, title=0, ylabel=0, legend=0, display=0):
 	margin = 0.2
-	
+	num = 0
+
 	for list in y:
-		N = len(y)
+		N = len(list)
 		x = np.arange(N)	# the x locations of the points
 
-		plt.errobar(x, y, ecolor='r')	# plotting line
+		if type(legend) is list:
+			leg = legend[num]
+			num=num+1
+		else:
+			num=num+1
+			leg = 'l' + str(num)
+			
+		plt.errobar(x, list, label=leg, ecolor='r') # plotting line
 
 	plt.margins(margin, margin)	# add margins to graph
+	plt.legend(loc=0, ncol=num)	# add legend to the graph
 	if ylabel:
 		plt.ylabel(ylabel)	# add label to the y axis
 	if xticks:
