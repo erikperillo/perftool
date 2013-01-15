@@ -87,7 +87,8 @@ def generate_data(files, df, c):
 			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 			value = p.stdout.readline().strip()
 			av.append(float(value))
-	
+		error=None
+		
 	return av, error
 
 #description
@@ -161,21 +162,21 @@ for f,v in opts:
 		ylabel = v
 
 	elif f == '-B':
-		if plot_type != 'b':
+		if plot_type == 'L' or plot_type == 'l':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='b'
 		input = list_files(v)
 
 	elif f == '-L':
-		if plot_type != 'l':
+		if plot_type == 'b':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='l'
 		input = list_files(v)
 
 	elif f == '-b':
-		if plot_type != 'b':
+		if plot_type == 'L' or plot_type == 'l':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='b'
@@ -183,7 +184,7 @@ for f,v in opts:
 		input2[int(temp[0])]=temp[1]
 
 	elif f == '-l':
-		if plot_type != 'L':
+		if plot_type == 'b':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='L'
@@ -191,7 +192,7 @@ for f,v in opts:
 		input2[int(temp[0])]=list_files(temp[1])
 
 	elif f == '-p':
-		if plot_type != 'L':
+		if plot_type == 'b':
 			fail("Cannot mix plot types.", 1)
 		else:
 			plot_type='L'
@@ -237,10 +238,15 @@ if plot_type == 'b':
 
 elif plot_type == 'l':
 	ylist,error = generate_data(input, field, conf)
+	print ylist
+	print error
 	plot.line(ylist, error, output, title, xlabel, ylabel)
 
 else:
 	input=dict_to_list(input2)
-#not finished yet	
-#ylist,error = generate_data(input, field, conf)
+	ylist = error = []
+	for list in input:
+		av,e = generate_data(list, field, conf)
+		ylist.append(av)
+		error.append(e)
 	plot.lines(ylist, error, output, title, ylabel)

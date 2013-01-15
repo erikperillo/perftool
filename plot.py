@@ -100,8 +100,8 @@ def lines(y, yerror=None, file=0, title=0, ylabel=0, legend=0, display=0):
 	margin = 0.2
 	num = 0
 
-	for list in y:
-		N = len(list)
+	for l,e in zip(y,yerror):
+		N = len(l)
 		x = np.arange(N)	# the x locations of the points
 
 		if type(legend) is list:
@@ -109,16 +109,15 @@ def lines(y, yerror=None, file=0, title=0, ylabel=0, legend=0, display=0):
 			num=num+1
 		else:
 			num=num+1
-			leg = 'l' + str(num)
+			leg = 'L' + str(num)
 			
-		plt.errobar(x, list, label=leg, ecolor='r') # plotting line
+		plt.errorbar(x, l, yerr=e, label=leg, ecolor='r') # plotting line
 
 	plt.margins(margin, margin)	# add margins to graph
 	plt.legend(loc=0, ncol=num)	# add legend to the graph
+
 	if ylabel:
 		plt.ylabel(ylabel)	# add label to the y axis
-	if xticks:
-		plt.xticks(x, xticks)	# add labels to the x ticks
 	if title:			
 		plt.title(title)	# add title to graph
 
