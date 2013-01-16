@@ -8,41 +8,41 @@ import subprocess
 
 # prints the module info
 def usage():
-	sys.stderr.write("\nHelp on plotd tool\nNAME\n\tplotd\nDESCRIPTION\n\tPlotd generates bar or line graphs from given rdt files\n")
+	sys.stderr.write("\nHelp on plotd tool\nNAME\n\tplotd\nDESCRIPTION\n\tPlotd generates bar or line graph from given rdt files\n")
 	sys.stderr.write("ARGUMENTS\n")
 	sys.stderr.write("\t-o str: Name for the output file including extension. It must be entered.\n")
 	sys.stderr.write("\t--df fieldname: Data field from rdt file to be plotted. It must be entered.\n")
 	sys.stderr.write("\t--cf conf: Confidence level of confidence. If none is entered error bars will not be displayed.\n")
 	sys.stderr.write("\t--title str: Graph title. If none is entered the graph will not have a title.\n")
-	sys.stderr.write("\t--xlabel: Label to each bar or x value in the graph. If not entered filenames will be used.\n")
-	sys.stderr.write("\t--ylabel: Label for the y axis. If not entered data field will be used.\n")
+	sys.stderr.write("\t--xlabel \"str1,str2,...,strn\": Label to each bar or dot in the graph. If not entered filenames will be used.\n")
+	sys.stderr.write("\t--ylabel str: Label for the y axis. If not entered data field will be used.\n")
 	sys.stderr.write("BAR PLOT\n")
-	sys.stderr.write("\t--bar: selects bar plot\n")
-	sys.stderr.write("\t-b n filename: The rdt file containing data for the nth bar of the graph.\n")
-	sys.stderr.write("\t-B filenames: rdt file range. One bar will be plotted for each file.\n")
+	sys.stderr.write("\t-B \"filename\": rdt file range. One bar will be plotted for each file.\n")
+	sys.stderr.write("\t-b \"n filename\": The rdt file containing data for the nth bar of the graph.\n")
 	sys.stderr.write("LINE PLOT\n")
-	sys.stderr.write("\t--lines: selects line plot\n")
-	sys.stderr.write("\t-l n filename: The rdt file range containing data for the nth line of the graph\n")
-	sys.stderr.write("\t-p n m filename: The rdt file containig data for the mth point of the nth line of graph.\n")
-	sys.stderr.write("\t-L filenames: rdt files range. A single line will be plotted.\n")
+	sys.stderr.write("\t-L \"filename\": rdt files range. A single line will be plotted.\n")
+	sys.stderr.write("\t-l \"n filename\": The rdt file range containing data for the nth line of the graph\n")
+	sys.stderr.write("\t--lp \"n m filename\": The rdt file containig data for the mth point of the nth line of graph.\n")
+	sys.stderr.write("\t--lines \"str1,str2,...,strn\": Label to each line in a multiple line plot. If not entered, default labels will be used(l1,l2,...,ln).\n")
 
 # prints an error message and the module info
 # exits if required
-# mesage: string
+# message: string
 # status: int
 def fail(message, status=0):
-        sys.stderr.write(message+'\n')
+        sys.stderr.write("ERROR: " + message+'\n')
         usage()
         if status:
                 sys.exit(status)
 
-# prints a warning message
+# prints a warning message and returns
 # message: string
 def warning(message):
 	sys.stderr.write("WARNING: " + message + '\n')
 
-# cuts the filename off the complete path
+# cuts off the filename of complete path
 # paths: list of strings
+# returns a list of strings
 def get_fname(paths):
 	flist=[]	
 	for path in paths:	
@@ -51,8 +51,9 @@ def get_fname(paths):
 		flist.append(fname[pos])
 	return flist
 
-# executes the ls command and returns a list of strings
+# executes the ls command 
 # filename: string
+# returns a list of strings
 def list_files(filename):
 	list=[]
 	cmd = "ls -1 " + filename
@@ -65,10 +66,11 @@ def list_files(filename):
 			break	# reached end of file						
 	return list
 
-# executes the compd tool and returns a list containing averages and another containing errors, if c is given
+# executes the compd tool 
 # files: list of strings
 # df: string
 # c: string
+# returns a list containing averages and another containing errors, if c is given
 def generate_data(files, df, c):
 
 	av=[]
@@ -91,8 +93,9 @@ def generate_data(files, df, c):
 		
 	return av, error
 
-#description
+# makes a list out of a dictionary
 # dict: dictionary containing the input files
+# returns a list
 def dict_to_list(dict):
 	d={}
 	l=[]
@@ -117,23 +120,13 @@ def dict_to_list(dict):
 # Main
 # ============
 
-#-B teste*.rdt
-#-b 1 teste1.rdt -b 2 meu_arquivo.rdt -b 3 terceira_barra.rdt
-
-#-L arquivos*.rdt   # Plota uma linha. Cada ponto e um arquivo diferente
-#-l 1 arquivos*.rdt -l 2 arquivos2*.rdt # Duas linhas. Os pontos de cada linha vem dos arquivos distintos.
-#-lp 1 1 arq.rdt -lp 1 2 arq2.rdt -lp 1 10 arq3.rdt -lp 2 1 a.rdt -lp 2 5 outro.rdt 
-
-#Mix and match:
-#-lp 1 1 arq.rdt -lp 1 7 arq7.rdt -l 2 linha2*.rdt
-	
-short_flags='B:b:L:l:o:p:h'
-long_flags=['df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'help']
+short_flags='B:b:L:l:o:h'
+long_flags=['lp=', 'df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'help']
 
 opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
 #print opts
 #sys.exit()	
-output=field=conf=title=xlabel=ylabel=plot_type=0
+output=field=conf=title=xlabel=ylabel=plot_type=legend=0
 input=[]
 input2={}
 	
@@ -160,6 +153,9 @@ for f,v in opts:
 
 	elif f == '--ylabel':
 		ylabel = v
+
+	elif f == '--lines':
+		legend = v.split(',')
 
 	elif f == '-B':
 		if plot_type == 'L' or plot_type == 'l':
@@ -191,7 +187,7 @@ for f,v in opts:
 		temp=v.split(' ')
 		input2[int(temp[0])]=list_files(temp[1])
 
-	elif f == '-p':
+	elif f == '--lp':
 		if plot_type == 'b':
 			fail("Cannot mix plot types.", 1)
 		else:
@@ -224,7 +220,7 @@ if not xlabel:
 	warning("no label for x values. File names will be used.")
 	xlabel=get_fname(input)
 else:
-	xlabel=xlabel.split(' ')
+	xlabel=xlabel.split(',')
 
 if not ylabel:
 	warning("no label for the y axis. Data field will be used.")	
@@ -238,15 +234,17 @@ if plot_type == 'b':
 
 elif plot_type == 'l':
 	ylist,error = generate_data(input, field, conf)
-	print ylist
-	print error
+	#print ylist
+	#print error
 	plot.line(ylist, error, output, title, xlabel, ylabel)
 
 else:
+	if not legend:
+		warning("labels for lines not entered. Default labels will be used.")
 	input=dict_to_list(input2)
 	ylist = error = []
 	for list in input:
 		av,e = generate_data(list, field, conf)
 		ylist.append(av)
 		error.append(e)
-	plot.lines(ylist, error, output, title, ylabel)
+	plot.lines(ylist, error, output, title, ylabel, legend)

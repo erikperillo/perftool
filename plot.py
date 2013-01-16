@@ -2,6 +2,13 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+# GLOBAL VARIABLES
+ANGLE=-20
+COLOUR='r'
+HA='left'
+MARGIN=0.2
+SIZE=5
+
 # This function plots a bar graph and save it to a file.
 # ARGUMENTS
 # y: list containing the height of the bars
@@ -15,16 +22,16 @@ def bars(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 	N = len(y)
 	x = np.arange(N)	# the x locations for the bars
 	width = 0.25		# width of the bars
-	xmargin = 0.2		# horizontal margin to graph
+	xmargin = MARGIN	# horizontal margin to graph
 
-	plt.bar(x, y, width, yerr=yerror, ecolor='r')	# plotting bar graph
+	plt.bar(x, y, width, yerr=yerror, ecolor=COLOUR)	# plotting bar graph
 	
 	plt.margins(xmargin,0)		# add horizontal margin
 	if ylabel:	
 		plt.ylabel(ylabel)	# add label to the y axis
 	if xticks:
 		# add labels to the x ticks
-		plt.xticks(x+width/2., xticks, size=5, weight='black',  stretch='ultra-condensed', rotation=-20, ha='left')	
+		plt.xticks(x+width/2., xticks, size=SIZE, weight='black',  stretch='ultra-condensed', rotation=ANGLE, ha=HA)	
 	if title:			
 		plt.title(title)	# add title to graph
 
@@ -67,16 +74,16 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 
 	N = len(y)
 	x = np.arange(N)	# the x locations of the points
-	margin = 0.2		# margin to graph
+	margin = MARGIN		# margin to graph
 
-	plt.errorbar(x, y, yerr=yerror, ecolor='r')	# plotting line graph
+	plt.errorbar(x, y, yerr=yerror, ecolor=COLOUR)	# plotting line graph
 
 	plt.margins(margin,margin)	# add margins to graph	
 	if ylabel:
 		plt.ylabel(ylabel)	# add label to the y axis
 	if xticks:
 		# add labels to the x ticks
-		plt.xticks(x, xticks, size=5, weight='black',  stretch='ultra-condensed', rotation=-20, ha='left')	
+		plt.xticks(x, xticks, size=SIZE, weight='black',  stretch='ultra-condensed', rotation=ANGLE, ha=HA)	
 	if title:			
 		plt.title(title)	# add title to graph
 
@@ -97,7 +104,7 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 # ylabel: label for the y axis 
 
 def lines(y, yerror=None, file=0, title=0, ylabel=0, legend=0, display=0):
-	margin = 0.2
+	margin = MARGIN
 	num = 0
 
 	for l,e in zip(y,yerror):
@@ -111,7 +118,7 @@ def lines(y, yerror=None, file=0, title=0, ylabel=0, legend=0, display=0):
 			num=num+1
 			leg = 'L' + str(num)
 			
-		plt.errorbar(x, l, yerr=e, label=leg, ecolor='r') # plotting line
+		plt.errorbar(x, l, yerr=e, label=leg, ecolor=COLOUR) # plotting line
 
 	plt.margins(margin, margin)	# add margins to graph
 	plt.legend(loc=0, ncol=num)	# add legend to the graph
