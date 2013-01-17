@@ -124,8 +124,7 @@ short_flags='B:b:L:l:o:h'
 long_flags=['lp=', 'df=', 'cf=', 'title=', 'xlabel=', 'ylabel=', 'help']
 
 opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
-#print opts
-#sys.exit()	
+
 output=field=conf=title=xlabel=ylabel=plot_type=legend=0
 input=[]
 input2={}
@@ -196,10 +195,6 @@ for f,v in opts:
 		input2[(int(temp[0]),int(temp[1]))]=temp[2]
 
 
-#print input2
-#sys.exit()		
-
-	
 if not plot_type:
 	fail("Input file(s) must be entered.", 1)
 
@@ -234,8 +229,6 @@ if plot_type == 'b':
 
 elif plot_type == 'l':
 	ylist,error = generate_data(input, field, conf)
-	#print ylist
-	#print error
 	plot.line(ylist, error, output, title, xlabel, ylabel)
 
 else:
