@@ -137,10 +137,8 @@ if not dataset:
 	av1, gm1, v1, sd1, c1, med1 = calc(list1, confidence)
 	av2, gm2, v2, sd2, c2, med2 = calc(list2, confidence)
 	avr = stats.ratio(av1, av2)
-	#avr-up = stats.ratio(av1, av2, c1, c2, 'u')
-	avr_up=0.0
-	#avr-low = stats.ratio(av1, av2, c1, c2, 'l')
-	avr_low=0.0
+	avr_up = stats.ratio(av1, av2, c1, c2, 'u')
+	avr_low = stats.ratio(av1, av2, c1, c2, 'l')
 	gmr = stats.ratio(gm1, gm2)
 	avd = stats.diff(av1, av2)
 	gmd = stats.diff(gm1, gm2)
