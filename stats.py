@@ -60,6 +60,16 @@ def var(sum1, sum2, size):
                 return 'error'
 	return v
 
+def median(x):
+	sorts=sorted(x)
+	n=len(sorts)
+	if n % 2 == 1:
+		return sorts[(n+1)/2 - 1] 
+	else: 
+		return sorts[n/2 - 1]
+		
+
+
 def stdv1(variance):
 #	print variance
 	return math.sqrt(variance)
