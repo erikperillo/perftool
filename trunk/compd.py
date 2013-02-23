@@ -18,8 +18,8 @@ def usage():
 	print "\t--of1: Primary output format. There will be one line for each data set plus one line per each comparison result if there are two data sets. If no format is selected, the results will be displayed in this format."  
 	print "\t--of2: Seconday output format. there will be a new line for each statistical result and comparison result if there are two data sets."
 	print "\t--of string: User-defined output format. This format can be definded by a string containing one or more of the following tokens:" 
-	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (av-ratio), (gm-ratio),(av-ratio-low), (av-ratio-up), (av-diff), (gm-diff),  for a pair of data sets"
-	print "\t\tor (ds-av), (ds-gm), (ds-ci), (ds-std), (ds-var) for a single data set.\n"
+	print "\t\t(ds1-av), (ds1-gm), (ds1-ci), (ds1-std), (ds1-var), (ds1-med), (ds2-av), (ds2-gm), (ds2-ci), (ds2-std), (ds2-var), (ds2-med), (av-ratio), (gm-ratio),(av-ratio-low), (av-ratio-up), (av-diff), (gm-diff),  for a pair of data sets"
+	print "\t\tor (ds-av), (ds-gm), (ds-ci), (ds-std), (ds-var) (ds-med) for a single data set.\n"
 
 def error(message, status):
 	sys.stderr.write(message+'\n')
@@ -62,6 +62,7 @@ def calc(x, conf):
 	av = stats.average(sum, size)
 	gm = stats.gmean(x)
 	v = stats.var(sum, stats.sqsum(x), size)
+	med = stats.median(x)
 
 	if v != 'error':
 		sd = stats.stdv1(v)
@@ -70,7 +71,7 @@ def calc(x, conf):
 		sd = 'error'
 		c = 'none'
 
-	return av, gm, v, sd, c
+	return av, gm, v, sd, c, med
 
 
 
@@ -133,11 +134,13 @@ if not dataset:
 	file1.close()
 	file2.close()
 
-	av1, gm1, v1, sd1, c1 = calc(list1, confidence)
-	av2, gm2, v2, sd2, c2 = calc(list2, confidence)
+	av1, gm1, v1, sd1, c1, med1 = calc(list1, confidence)
+	av2, gm2, v2, sd2, c2, med2 = calc(list2, confidence)
 	avr = stats.ratio(av1, av2)
 	#avr-up = stats.ratio(av1, av2, c1, c2, 'u')
+	avr_up=0.0
 	#avr-low = stats.ratio(av1, av2, c1, c2, 'l')
+	avr_low=0.0
 	gmr = stats.ratio(gm1, gm2)
 	avd = stats.diff(av1, av2)
 	gmd = stats.diff(gm1, gm2)
@@ -178,7 +181,11 @@ if not dataset:
 	        print "Geometric mean diff: ", gmd
 	
 	else:
-		format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 'ds1-var':v1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 'ds2-std':sd2, 'ds2-var':v2, 'av-ratio':avr, 'av-ratio-up':avr-up, 'av-ratio-low':avr-low, 'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd}
+		format = {'ds1-av':av1, 'ds1-gm':gm1, 'ds1-ci':c1, 'ds1-std':sd1, 
+			  'ds1-var':v1, 'ds1-med':med1, 'ds2-av':av2, 'ds2-gm':gm2, 'ds2-ci':c2, 
+			  'ds2-std':sd2, 'ds2-var':v2, 'ds2-med':med2, 'av-ratio':avr, 
+			  'av-ratio-up':avr_up, 'av-ratio-low':avr_low, 
+			  'gm-ratio':gmr, 'av-diff':avd, 'gm-diff':gmd}
                 output = output.replace('(', '%(')
                 output = output.replace(')', ')s')
 		try:
@@ -200,7 +207,7 @@ else:
 
 	list = search(file, field)
 	file.close()
-	av, gm, v, sd, c = calc(list, confidence)
+	av, gm, v, sd, c, med = calc(list, confidence)
 
 	if output == 1:
 		print field 
@@ -218,13 +225,15 @@ else:
 		print "\nvariance: ", v
 		print "standard deviation: ", sd
 	else:
-		format = {'ds-av':av, 'ds-gm':gm, 'ds-ci':c, 'ds-std':sd, 'ds-var':v}
+		format = {'ds-av':av, 'ds-gm':gm, 'ds-ci':c, 'ds-std':sd, 'ds-var':v, 'ds-med':med}
 		output = output.replace('(', '%(')
-		output = output.replace(')', ')s')
+		#TODO: add an option to set the real number print precision
+		output = output.replace(')', ').2f')
+		#output = output.replace(')', ').s')
 		try:
 			print output % format
 		except KeyError as e:
-			print "WARNING: (%s) is not a valid token." % e
+			print "WARNING(2): %s is not a valid token." % e
 			usage(); 
 	
 
