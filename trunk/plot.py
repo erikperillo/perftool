@@ -3,11 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES
-ANGLE=-20
+ANGLE=-45
 COLOUR='r'
 HA='left'
-MARGIN=0.2
-SIZE=5
+MARGIN=0.1
+SIZE=7
 
 # This function plots a bar graph and save it to a file.
 # ARGUMENTS
@@ -78,7 +78,8 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 
 	plt.errorbar(x, y, yerr=yerror, ecolor=COLOUR)	# plotting line graph
 
-	plt.margins(margin,margin)	# add margins to graph	
+	plt.margins(margin,margin)		# add margins to graph	
+	plt.ylim(ymin=0)
 	if ylabel:
 		plt.ylabel(ylabel)	# add label to the y axis
 	if xticks:

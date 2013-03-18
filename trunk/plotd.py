@@ -97,23 +97,54 @@ def generate_data(files, df, c):
 # dict: dictionary containing the input files
 # returns a list
 def dict_to_list(dict):
-	d={}
-	l=[]
-	temp=-1
-	for key in dict:
-		if type(key) is int:
-			d[key]=dict[key]
-		else:
-			if temp == key[0]:
-				l.append(dict[key])
-			else:
-				if len(l):
-					d[temp]=l
-					del l[:]
-				temp=key[0]
+        d={}
+        l=[]
+        temp=-1
+        for key in dict:
+                if type(key) is int:
+                        d[key]=dict[key]
+                else:
+                        if temp == key[0]:
+                                l.append(dict[key])
+                        else:
+                                if len(l):
+                                        d[temp]=l
+                                        del l[:]
+                                temp=key[0]
+                                l.append(dict[key])
+        if len(d):
+                d[temp]=l
+                list = d.values()
+        else:
+                list=l
+        
+        return list
+
+# generates report file
+# xvalues: list containing labels for x ticks
+# yvalues: list containing y values
+# yerror: list containig y error values
+# filenme: string for the name of tha graph file
+def gen_report(xvalues, yvalues, yerror, filename):
+	ymax=[(x+y) for x, y in zip(yvalues, yerror)]
+	ymin=[(x-y) for x, y in zip(yvalues, yerror)]
+
+	filename=filename.rstrip('.png') + '.csv' 
+
+	pos=1
+	while pos < len(ymax):
+		if ymax[pos-1] < ymin[pos]:
+			# report
+			avincrease=(yvalues[pos]-yvalues[pos-1])*(100/yvalues[pos-1])
+			minincrease=(ymin[pos]-ymax[pos-1])*(100/ymin[pos])		
 			
-	list = d.values()		
-	return list	
+			fileobj=open(filename, 'a')
+			reportstr = str(xvalues[pos-1]) + "," + str(yvalues[pos-1]) + "," + str(yerror[pos-1]) + "," + str(xvalues[pos]) + "," + str(yvalues[pos]) + "," + str(yerror[pos]) + "," + str(avincrease) + "," + str(minincrease) + "\n"
+#			print reportstr	
+			fileobj.write(reportstr)
+ 			fileobj.close()
+		pos=pos+1
+	return
 
 
 # ============
@@ -213,13 +244,16 @@ if not title:
 
 if not xlabel:
 	warning("no label for x values. File names will be used.")
-	xlabel=get_fname(input)
+	if len(input):
+		xlabel=get_fname(input)
 else:
 	xlabel=xlabel.split(',')
 
 if not ylabel:
 	warning("no label for the y axis. Data field will be used.")	
 	ylabel = field
+
+#print "input2: ", input2 
 	
 if plot_type == 'b':
 	if len(input2):
@@ -232,12 +266,23 @@ elif plot_type == 'l':
 	plot.line(ylist, error, output, title, xlabel, ylabel)
 
 else:
-	if not legend:
-		warning("labels for lines not entered. Default labels will be used.")
 	input=dict_to_list(input2)
+	#print "input: ", input
 	ylist = error = []
-	for list in input:
-		av,e = generate_data(list, field, conf)
+	for l in input:
+		if type(l) is list:
+			break
+		ylist,error=generate_data(input, field, conf)
+		plot.line(ylist, error, output, title, xlabel, ylabel)
+		sys.exit() 
+	for l in input:
+		av,e = generate_data(l, field, conf)
 		ylist.append(av)
 		error.append(e)
+	#print "ylist: ", ylist
+	if not legend:
+		warning("labels for lines not entered. Default labels will be used.")
 	plot.lines(ylist, error, output, title, ylabel, legend)
+
+if conf:
+	gen_report(xlabel, ylist, error, output)
