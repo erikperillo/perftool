@@ -4,6 +4,7 @@ import re
 import sys
 import plot
 import getopt
+import shutil
 import subprocess
 
 # prints the module info
@@ -126,10 +127,12 @@ def dict_to_list(dict):
 # yerror: list containig y error values
 # filenme: string for the name of tha graph file
 def gen_report(xvalues, yvalues, yerror, filename):
+	DIR="/local/julia/performance_regression/perf_data/report/warning/"
+
 	ymax=[(x+y) for x, y in zip(yvalues, yerror)]
 	ymin=[(x-y) for x, y in zip(yvalues, yerror)]
 
-	filename=filename.rstrip('.png') + '.csv' 
+	filename=filename.rstrip('.png') + '.poi' 
 
 	pos=1
 	while pos < len(ymax):
@@ -139,11 +142,14 @@ def gen_report(xvalues, yvalues, yerror, filename):
 			minincrease=(ymin[pos]-ymax[pos-1])*(100/ymin[pos])		
 			
 			fileobj=open(filename, 'a')
-			reportstr = str(xvalues[pos-1]) + "," + str(yvalues[pos-1]) + "," + str(yerror[pos-1]) + "," + str(xvalues[pos]) + "," + str(yvalues[pos]) + "," + str(yerror[pos]) + "," + str(avincrease) + "," + str(minincrease) + "\n"
+			reportstr = str(xvalues[pos-1]) + "," + str(yvalues[pos-1]) + "+-" + str(yerror[pos-1]) + "s," + str(xvalues[pos]) + "," + str(yvalues[pos]) + "+-" + str(yerror[pos]) + "s," + str(avincrease) + "%," + str(minincrease) + "%\n"
 #			print reportstr	
 			fileobj.write(reportstr)
  			fileobj.close()
 		pos=pos+1
+
+	shutil.move(filename, DIR)
+
 	return
 
 
