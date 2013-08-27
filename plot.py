@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+#import pdb; pdb.set_trace()
 
 # GLOBAL VARIABLES
 ANGLE=-45
@@ -75,7 +76,7 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 	N = len(y)
 	x = np.arange(N)	# the x locations of the points
 	margin = MARGIN		# margin to graph
-
+	print "DIR: ", file 
 	plt.errorbar(x, y, yerr=yerror, ecolor=COLOUR)	# plotting line graph
 
 	plt.margins(margin,margin)		# add margins to graph	
@@ -122,8 +123,8 @@ def lines(y, yerror=None, file=0, title=0, ylabel=0, legend=0, display=0):
 		plt.errorbar(x, l, yerr=e, label=leg, ecolor=COLOUR) # plotting line
 
 	plt.margins(margin, margin)	# add margins to graph
-	plt.legend(loc=0, ncol=num)	# add legend to the graph
-
+	if legend:
+		plt.legend(loc=0, ncol=num)	# add legend to the graph
 	if ylabel:
 		plt.ylabel(ylabel)	# add label to the y axis
 	if title:			

@@ -5,7 +5,14 @@ import sys
 import plot
 import getopt
 import shutil
+import os.path
 import subprocess
+#import pdb; pdb.set_trace()
+from collections import namedtuple
+
+bar = namedtuple("bar", ["b","file"])
+line = namedtuple("line", ["l","files"])
+point = namedtuple("point", ["l","p","file"])
 
 # prints the module info
 def usage():
@@ -79,7 +86,7 @@ def generate_data(files, df, c):
 
 	if c:
 		for f in files:
-			cmd = "/local/julia/perftool/compd.py --cf " + df + " --cl " + c + " --of '(ds-av) (ds-ci)' --ds " + f
+			cmd = "/local/julia/perftool/compd.py --cf " + df + " --cl " + str(c) + " --of '(ds-av) (ds-ci)' --ds " + f
 			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 			values = p.stdout.readline().strip().split(' ')
 			av.append(float(values[0]))
@@ -94,33 +101,6 @@ def generate_data(files, df, c):
 		
 	return av, error
 
-# makes a list out of a dictionary
-# dict: dictionary containing the input files
-# returns a list
-def dict_to_list(dict):
-        d={}
-        l=[]
-        temp=-1
-        for key in dict:
-                if type(key) is int:
-                        d[key]=dict[key]
-                else:
-                        if temp == key[0]:
-                                l.append(dict[key])
-                        else:
-                                if len(l):
-                                        d[temp]=l
-                                        del l[:]
-                                temp=key[0]
-                                l.append(dict[key])
-        if len(d):
-                d[temp]=l
-                list = d.values()
-        else:
-                list=l
-        
-        return list
-
 # generates report file
 # xvalues: list containing labels for x ticks
 # yvalues: list containing y values
@@ -132,7 +112,8 @@ def gen_report(xvalues, yvalues, yerror, filename):
 	ymax=[(x+y) for x, y in zip(yvalues, yerror)]
 	ymin=[(x-y) for x, y in zip(yvalues, yerror)]
 
-	filename=filename.rstrip('.png') + '.poi' 
+	filename1=filename.rstrip('.png') + '.poi' 
+	filename2=filename.rstrip('.png') + '.all' 
 
 	pos=1
 	while pos < len(ymax):
@@ -141,14 +122,24 @@ def gen_report(xvalues, yvalues, yerror, filename):
 			avincrease=(yvalues[pos]-yvalues[pos-1])*(100/yvalues[pos-1])
 			minincrease=(ymin[pos]-ymax[pos-1])*(100/ymin[pos])		
 			
-			fileobj=open(filename, 'a')
+			fileobj=open(filename1, 'a')
 			reportstr = str(xvalues[pos-1]) + "," + str(yvalues[pos-1]) + "+-" + str(yerror[pos-1]) + "s," + str(xvalues[pos]) + "," + str(yvalues[pos]) + "+-" + str(yerror[pos]) + "s," + str(avincrease) + "%," + str(minincrease) + "%\n"
-#			print reportstr	
+			print reportstr	
 			fileobj.write(reportstr)
- 			fileobj.close()
+			fileobj.close()
 		pos=pos+1
+	
+	fileobj=open(filename2, 'a')
+	for i in range(len(xvalues)):
+		reportstr = str(xvalues[i]) + ',' + str(yvalues[i]) + ',' + str(yerror[i]) + ',' + str(ymin[i]) + ',' + str(ymax[i]) + '\n'
+		fileobj.write(reportstr)
+ 	fileobj.close()
 
-	shutil.move(filename, DIR)
+# checar existencia do arquivo no diretorio de destino
+	if os.path.exists(filename1) and not(os.path.exists(DIR+filename1)):
+		shutil.move(filename1, DIR)
+	if os.path.exists(filename2) and not(os.path.exists(DIR+filename1)):
+		shutil.move(filename2, DIR)
 
 	return
 
@@ -164,7 +155,6 @@ opts, extra_args = getopt.getopt(sys.argv[1:], short_flags, long_flags)
 
 output=field=conf=title=xlabel=ylabel=plot_type=legend=0
 input=[]
-input2={}
 	
 for f,v in opts:
 
@@ -194,42 +184,37 @@ for f,v in opts:
 		legend = v.split(',')
 
 	elif f == '-B':
-		if plot_type == 'L' or plot_type == 'l':
-			fail("Cannot mix plot types.", 1)
-		else:
-			plot_type='b'
+		if plot_type == 'L' or plot_type == 'l' or plot_type == 'lp' or plot_type == 'b':
+			fail("Cannot mix these plot types.", 1)
+		plot_type='B'
 		input = list_files(v)
 
 	elif f == '-L':
-		if plot_type == 'b':
-			fail("Cannot mix plot types.", 1)
-		else:
-			plot_type='l'
+		if plot_type == 'b' or plot_type == 'B' or plot_type == 'l' or plot_type == 'lp':
+			fail("Cannot mix these plot types.", 1)
+		plot_type='L'
 		input = list_files(v)
 
 	elif f == '-b':
-		if plot_type == 'L' or plot_type == 'l':
-			fail("Cannot mix plot types.", 1)
-		else:
-			plot_type='b'
+		if plot_type == 'L' or plot_type == 'l' or plot_type == 'lp' or plot_type == 'B':
+			fail("Cannot mix these plot types.", 1)
+		plot_type='b'
 		temp=v.split(' ')
-		input2[int(temp[0])]=temp[1]
+		input.append(bar(b=int(temp[0]), file=temp[1]))
 
 	elif f == '-l':
-		if plot_type == 'b':
-			fail("Cannot mix plot types.", 1)
-		else:
-			plot_type='L'
+		if plot_type == 'b' or plot_type == 'B' or plot_type == 'L':
+			fail("Cannot mix these plot types.", 1)
+		plot_type='l'
 		temp=v.split(' ')
-		input2[int(temp[0])]=list_files(temp[1])
+		input.append(line(l=int(temp[0]), files=list_files(temp[1])))
 
 	elif f == '--lp':
-		if plot_type == 'b':
-			fail("Cannot mix plot types.", 1)
-		else:
-			plot_type='L'
+		if plot_type == 'b' or plot_type == 'B' or plot_type == 'L':
+			fail("Cannot mix these plot types.", 1)
+		plot_type='lp'
 		temp=v.split(' ')
-		input2[(int(temp[0]),int(temp[1]))]=temp[2]
+		input.append(point(l=int(temp[0]), p=int(temp[1]), file=temp[2]))
 
 
 if not plot_type:
@@ -259,36 +244,65 @@ if not ylabel:
 	warning("no label for the y axis. Data field will be used.")	
 	ylabel = field
 
-#print "input2: ", input2 
-	
-if plot_type == 'b':
-	if len(input2):
-		input=input2.values()
+
+if plot_type == 'b' or plot_type == 'B':
+	if plot_type == 'b':
+		input.sort(key=lambda x:x.b)
+		input = [bar.file for bar in input]
 	ylist,error = generate_data(input, field, conf)
 	plot.bars(ylist, error, output, title, xlabel, ylabel)
 
-elif plot_type == 'l':
+elif plot_type == 'L':
 	ylist,error = generate_data(input, field, conf)
 	plot.line(ylist, error, output, title, xlabel, ylabel)
 
-else:
-	input=dict_to_list(input2)
-	#print "input: ", input
-	ylist = error = []
-	for l in input:
-		if type(l) is list:
-			break
-		ylist,error=generate_data(input, field, conf)
-		plot.line(ylist, error, output, title, xlabel, ylabel)
-		sys.exit() 
-	for l in input:
+elif plot_type == 'l' or plot_type == 'lp':
+	
+	ylist = []
+	error = []
+	aux = []
+	flist = []
+
+	input.sort(key=lambda x:x.l)
+
+	if plot_type == 'l':
+		i=1
+		while True:
+			aux = [line.files for line in input if line.l==i]
+			if not len(aux):
+				break
+			flist.append(aux)
+			i=i+1	
+	elif plot_type == 'lp':
+		i=1
+		while True:
+			aux = [point for point in input if point.l==i]
+			if not len(aux):
+				break
+			aux.sort(key=lambda x:x.p)
+			aux = [point.file for point in aux]
+			flist.append(aux)
+			i=i+1
+	for l in flist:
 		av,e = generate_data(l, field, conf)
 		ylist.append(av)
 		error.append(e)
-	#print "ylist: ", ylist
+		
+		#	ylist,error=generate_data(input, field, conf)
+		#	plot.line(ylist, error, output, title, xlabel, ylabel)
+	#elif plot_type == 'lp':
 	if not legend:
 		warning("labels for lines not entered. Default labels will be used.")
-	plot.lines(ylist, error, output, title, ylabel, legend)
+	
+	if len(ylist) == 1:
+		plot.line(ylist[0], error[0], output, title, xlabel, ylabel)
+	elif len(ylist) > 1:
+		plot.lines(ylist, error, output, title, ylabel, legend)
 
-if conf:
-	gen_report(xlabel, ylist, error, output)
+else:
+	fail(plot_type+"is not a valid plot type", 1)
+
+#verificar se grafico foi gerado
+
+if conf: 
+	gen_report(xlabel, ylist[0], error[0], output)
