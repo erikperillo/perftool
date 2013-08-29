@@ -13,7 +13,7 @@ def usage():
 	print "\nARGUMENTS"
 	print "\t--ds1 file1name --ds2 file2name: The rdt files to be compared. The complete path is needed if the files are not in the same directory as the script"
 	print "\t--ds filename: The rdt file to be analyzed. The complete path is needed if the file are not in the same directory as the script"
-	print "\t--cf column: The feature to be anlyzed or/and compared. It corresponds to one of the columns of the rdt file(s). You must enter this argument."
+	print "\t--cf column: The column to be anlyzed or/and compared. It corresponds to one of the columns of the rdt file(s). You must enter this argument."
 	print "\t--cl number: The confidence level for the confidence interval. The values supported are 20%, 50%, 80%, 90%, 95%, 98%, 99%, 99.9%. In case no confidence level is set, the confidence interval will be calculated with a confidence value of 95%"
 	print "\t--of1: Primary output format. There will be one line for each data set plus one line per each comparison result if there are two data sets. If no format is selected, the results will be displayed in this format."  
 	print "\t--of2: Seconday output format. there will be a new line for each statistical result and comparison result if there are two data sets."
@@ -77,7 +77,7 @@ def calc(x, conf):
 
 # Main
 
-flags = ['ds1=', 'ds2=', 'ds=', 'cf=', 'cl=', 'of1', 'of2', 'of=', 'help']
+flags = ['ds1=', 'ds2=', 'ds=', 'cf=', 'cl=', 'of1', 'of2', 'of=', 'help', 'dump=']
 
 opts, args = getopt.getopt(sys.argv[1:], 'h', flags)
 
@@ -103,18 +103,20 @@ for p,v in opts:
 	elif p == '--of':
 		output = v
 	elif p == '-h' or p == "--help":
-		usage();
+		usage()
 		sys.exit(0)
+	elif p == "--dump":
+		file = v	
 
 if not field:
         print "Field to be analyzed missing."
-	usage();
+	usage()
         sys.exit(1)
 
 if not dataset:
         if not dataset1 or not dataset2:
                 print "One or more data sets missing."
-		usage();
+		usage()
 		sys.exit(1)
 
 	try:

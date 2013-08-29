@@ -81,6 +81,7 @@ def line(y, yerror=None, file=0, title=0, xticks=0, ylabel=0, display=0):
 
 	plt.margins(margin,margin)		# add margins to graph	
 	plt.ylim(ymin=0)
+	plt.grid(True)
 	if ylabel:
 		plt.ylabel(ylabel)	# add label to the y axis
 	if xticks:
@@ -123,6 +124,7 @@ def lines(y, yerror=None, file=0, title=0, ylabel=0, legend=0, display=0):
 		plt.errorbar(x, l, yerr=e, label=leg, ecolor=COLOUR) # plotting line
 
 	plt.margins(margin, margin)	# add margins to graph
+	plt.grid(True)
 	if legend:
 		plt.legend(loc=0, ncol=num)	# add legend to the graph
 	if ylabel:
