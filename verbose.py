@@ -8,7 +8,6 @@ import sys
 # status: int
 def fail(message, status=0):
         sys.stderr.write("ERROR: " + message+'\n')
-#        usage()
         if status:
                 sys.exit(status)
 

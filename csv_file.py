@@ -5,7 +5,8 @@
 # julia.beltrao@students.ic.unicamp.br
 # since 2013
 
-import verbose.py
+import os.path
+import verbose as vb
 
 newline='\n'
 
@@ -20,6 +21,7 @@ def create(file, header):
 	return 0
 
 def write(file, line):
+	check(file)
 	try:
 		f = open(file, 'a')
 		line = str(line).replace('[','').replace(']','').replace(' ','')
@@ -33,24 +35,23 @@ def write(file, line):
 def read(file, line='*', col='*'):
 	status=0
 	list=[]
+	check(file)
 	try:
 		f = open(file, 'r')
 		if line=='*' and col=='*':
-			f.readline()
 			list=f.readlines()
 		else:
 			if line == '*':
-			f.readline()
-			temp=f.readlines()
-			for l in temp:
-				list.append(l[col-1])
+				temp=f.readlines()
+				for l in temp:
+					list.append(l[col-1])
 
 			elif col == '*':
-				list=f.readlines()[line]
+				list=f.readlines()[line-1]
 
 			else:
-				list=f.readlines()[line]
-				list=list.split()[col-1]	
+				list=f.readlines()[line-1]
+				list=list.split(',')[col-1]	
 
 		f.close()
 	except IOError:
@@ -60,6 +61,8 @@ def read(file, line='*', col='*'):
 #TODO: testar funcao
 def check(file):
 	status=0
+	if not os.path.exists(file):
+		vb.fail("could not find "+file+": file does not exist.",2)
 	try:
 		f = open(file, 'r')
 		lines = f.readlines()
@@ -70,4 +73,5 @@ def check(file):
 		if len(line) != ncol:
 			status=1
 			break
+	f.close()
 	return status		
