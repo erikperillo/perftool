@@ -3,6 +3,7 @@
 import sys
 import stats
 import getopt
+import csv_file
 
 def usage():
 	print "\nHelp on compd tool\n"
@@ -81,7 +82,7 @@ flags = ['ds1=', 'ds2=', 'ds=', 'cf=', 'cl=', 'of1', 'of2', 'of=', 'help', 'dump
 
 opts, args = getopt.getopt(sys.argv[1:], 'h', flags)
 
-dataset1=dataset2=dataset=field=0
+dataset1=dataset2=dataset=field=dump=0
 confidence = 95 # Default confidence level
 output = 1 # Default output format
 
@@ -106,7 +107,7 @@ for p,v in opts:
 		usage()
 		sys.exit(0)
 	elif p == "--dump":
-		file = v	
+		dump = v	
 
 if not field:
         print "Field to be analyzed missing."
@@ -189,10 +190,15 @@ if not dataset:
                 output = output.replace('(', '%(')
                 output = output.replace(')', ')s')
 		try:
-                	print output % format
+                	sret = output % format
 		except KeyError as e:
 			print "WARNING: (%s) is not a valid token." % e
 			usage();
+		if not dump:
+			print sret
+		else:
+			sret = sret.split()
+			csv_file.write(dump, sret)
 else:
         if dataset1 or dataset2:
                 print "Use either --ds or --ds1 and --ds2."
