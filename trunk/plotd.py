@@ -303,6 +303,3 @@ else:
 	fail(plot_type+"is not a valid plot type", 1)
 
 #verificar se grafico foi gerado
-
-if conf: 
-	gen_report(xlabel, ylist[0], error[0], output)
