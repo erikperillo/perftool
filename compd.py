@@ -4,6 +4,7 @@ import sys
 import stats
 import getopt
 import csv_file
+#import pdb; pdb.set_trace()
 
 def usage():
 	print "\nHelp on compd tool\n"
@@ -194,11 +195,8 @@ if not dataset:
 		except KeyError as e:
 			print "WARNING: (%s) is not a valid token." % e
 			usage();
-		if not dump:
-			print sret
-		else:
-			sret = sret.split()
-			csv_file.write(dump, sret)
+		if not dump: print sret
+		else: csv_file.write(dump, sret)
 else:
         if dataset1 or dataset2:
                 print "Use either --ds or --ds1 and --ds2."
@@ -237,13 +235,9 @@ else:
 		output = output.replace(')', ').2f')
 		#output = output.replace(')', ').s')
 		try:
-			print output % format
+                	sret = output % format
 		except KeyError as e:
-			print "WARNING(2): %s is not a valid token." % e
-			usage(); 
-	
-
-
-
-
-
+			print "WARNING: (%s) is not a valid token." % e
+			usage();
+		if not dump: print sret
+		else: csv_file.write(dump, sret)
